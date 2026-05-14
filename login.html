@@ -84,7 +84,7 @@
         if (error) throw error;
 
         // Get user profile
-        const { data: profile } = await sb.from('users').select('*').eq('id', data.user.id).single();
+        const { data: profile } = await sb.from('users').select('*').eq('id', data.user.id).maybeSingle();
 
         const user = profile || { id: data.user.id, email, plan: 'free', role: email === ADMIN_EMAIL ? 'admin' : 'user' };
         localStorage.setItem('savd_user', JSON.stringify(user));

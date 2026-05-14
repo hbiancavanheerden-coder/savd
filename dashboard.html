@@ -448,21 +448,30 @@
 
   // ── INIT ──────────────────────────────────────────────────────────────────
   async function init() {
-    // Show loading state
     document.getElementById('cardsGrid').innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:#555;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:2px">LOADING…</div>`;
 
     try {
       const { data: { session }, error: sessErr } = await sb.auth.getSession();
       if (sessErr || !session) { window.location.href = 'login.html'; return; }
 
-      // Get user profile — don't fail if missing
-      try {
-        const { data: profile } = await sb.from('users').select('*').eq('id', session.user.id).single();
-        if (profile) { user = profile; localStorage.setItem('savd_user', JSON.stringify(user)); }
-      } catch(e) {
-        // Use cached user from localStorage if Supabase fails
-        user = JSON.parse(localStorage.getItem('savd_user') || '{}');
-        if (!user.id) user = { id: session.user.id, email: session.user.email, plan: 'free', role: 'user' };
+      // Get user profile — use maybeSingle() instead of single() to avoid 406
+      const { data: profile } = await sb.from('users').select('*').eq('id', session.user.id).maybeSingle();
+
+      if (profile) {
+        user = profile;
+        localStorage.setItem('savd_user', JSON.stringify(user));
+      } else {
+        // No profile row — create one
+        const newUser = {
+          id: session.user.id,
+          email: session.user.email,
+          name: session.user.email.split('@')[0],
+          plan: 'free',
+          role: session.user.email === 'biancavanheerden@icloud.com' ? 'admin' : 'user'
+        };
+        await sb.from('users').insert(newUser).select().maybeSingle();
+        user = newUser;
+        localStorage.setItem('savd_user', JSON.stringify(user));
       }
 
       document.getElementById('sidebarName').textContent = user.name || user.email || 'User';
@@ -475,7 +484,7 @@
 
     } catch(e) {
       console.error('Init error:', e);
-      document.getElementById('cardsGrid').innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:#ee5555;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:2px">Error loading. <a href="login.html" style="color:#ffffff">Sign in again</a></div>`;
+      document.getElementById('cardsGrid').innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:#ee5555;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:2px">Error: ${e.message} — <a href="login.html" style="color:#ffffff">Sign in again</a></div>`;
     }
   }
 
