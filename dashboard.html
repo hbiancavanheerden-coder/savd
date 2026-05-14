@@ -454,14 +454,22 @@
       const { data: { session }, error: sessErr } = await sb.auth.getSession();
       if (sessErr || !session) { window.location.href = 'login.html'; return; }
 
-      // Get user profile — use maybeSingle() instead of single() to avoid 406
-      const { data: profile } = await sb.from('users').select('*').eq('id', session.user.id).maybeSingle();
+      // Get user profile using both id and email as fallback
+      let profile = null;
+      try {
+        const { data } = await sb.from('users').select('*').eq('id', session.user.id).maybeSingle();
+        profile = data;
+        if (!profile) {
+          const { data: data2 } = await sb.from('users').select('*').eq('email', session.user.email).maybeSingle();
+          profile = data2;
+        }
+      } catch(e) { console.log('Profile fetch error:', e); }
 
       if (profile) {
         user = profile;
         localStorage.setItem('savd_user', JSON.stringify(user));
       } else {
-        // No profile row — create one
+        // No profile row — upsert to avoid conflict
         const newUser = {
           id: session.user.id,
           email: session.user.email,
@@ -469,8 +477,8 @@
           plan: 'free',
           role: session.user.email === 'biancavanheerden@icloud.com' ? 'admin' : 'user'
         };
-        await sb.from('users').insert(newUser).select().maybeSingle();
-        user = newUser;
+        const { data: upserted } = await sb.from('users').upsert(newUser, { onConflict: 'id' }).select().maybeSingle();
+        user = upserted || newUser;
         localStorage.setItem('savd_user', JSON.stringify(user));
       }
 
