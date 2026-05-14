@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Savd — Your Creative Swipe File</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <meta property="og:title" content="Savd — Your Creative Swipe File" />
+  <meta property="og:description" content="Save viral posts, links and carousels. Organised by intent. Ready when you write." />
+  <meta property="og:image" content="https://savd.site/thumbnail.jpg" />
+  <meta property="og:url" content="https://savd.site" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; background: #0a0a0a; }
+    body { background-color: #0a0a0a !important; color: #ffffff; font-family: 'Poppins', sans-serif; font-weight: 300; line-height: 1.6; overflow-x: hidden; }
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 20px 48px; background: transparent; transition: background 0.3s; border-bottom: 1px solid transparent; }
+    nav.scrolled { background: #0a0a0a; border-bottom-color: #222; }
+    .nav-logo { font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 800; color: #ffffff; text-decoration: none; }
+    .nav-links { display: flex; gap: 32px; align-items: center; }
+    .nav-links a { color: #888; text-decoration: none; font-size: 13px; font-weight: 500; transition: color 0.2s; }
+    .nav-links a:hover { color: #fff; }
+    .btn-nav { background: #ffffff !important; color: #0a0a0a !important; padding: 10px 24px; font-size: 12px !important; font-weight: 600 !important; }
+    .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 120px 48px 80px; background-color: #0a0a0a; }
+    .hero-tag { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #555; margin-bottom: 28px; }
+    .hero-title { font-family: 'Poppins', sans-serif; font-size: clamp(48px, 8vw, 96px); font-weight: 800; line-height: 1.0; letter-spacing: -2px; color: #ffffff; max-width: 860px; }
+    .dim { color: #555; font-weight: 300; }
+    .hero-sub { margin-top: 32px; font-size: 17px; color: #aaa; max-width: 460px; line-height: 1.7; }
+    .hero-actions { margin-top: 44px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+    .btn-white { background: #ffffff; color: #0a0a0a; padding: 15px 36px; font-size: 13px; font-weight: 600; border: none; cursor: pointer; text-decoration: none; display: inline-block; }
+    .btn-white:hover { opacity: 0.85; }
+    .btn-outline { background: transparent; color: #888; padding: 15px 28px; font-size: 13px; border: 1px solid #333; cursor: pointer; text-decoration: none; display: inline-block; }
+    .btn-outline:hover { color: #fff; border-color: #666; }
+    .marquee-wrap { background: #0a0a0a; border-top: 1px solid #222; border-bottom: 1px solid #222; overflow: hidden; padding: 14px 0; }
+    .marquee-track { display: flex; gap: 48px; animation: marquee 22s linear infinite; white-space: nowrap; }
+    .marquee-item { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #444; flex-shrink: 0; }
+    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    .how-section { background-color: #0a0a0a; padding: 100px 48px; border-top: 1px solid #222; }
+    .sec-label { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #555; margin-bottom: 20px; }
+    .sec-title { font-family: 'Poppins', sans-serif; font-size: clamp(32px, 4vw, 52px); font-weight: 800; letter-spacing: -1.5px; line-height: 1.1; color: #ffffff; }
+    .how-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 56px; }
+    .how-card { background-color: #161616; padding: 44px 36px; border: 1px solid #262626; }
+    .how-num { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 3px; color: #444; margin-bottom: 24px; }
+    .how-title { font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 700; color: #ffffff; margin-bottom: 12px; }
+    .how-desc { font-size: 14px; color: #999; line-height: 1.7; }
+    .feat-section { background-color: #ffffff; padding: 100px 48px; border-top: 1px solid #e0e0e0; }
+    .feat-section .sec-label { color: #999; }
+    .feat-section .sec-title { color: #0a0a0a; }
+    .feat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-top: 56px; }
+    .feat-card { background-color: #f0f0f0; padding: 44px 36px; border: 1px solid #e0e0e0; }
+    .feat-icon { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #999; margin-bottom: 20px; display: block; }
+    .feat-title { font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 700; color: #0a0a0a; margin-bottom: 10px; }
+    .feat-desc { font-size: 14px; color: #666; line-height: 1.7; }
+    .vault-section { background-color: #0a0a0a; padding: 100px 48px; border-top: 1px solid #222; }
+    .vault-inner { max-width: 680px; }
+    .vault-title { font-family: 'Poppins', sans-serif; font-size: clamp(36px, 5vw, 64px); font-weight: 800; letter-spacing: -2px; line-height: 1.05; color: #ffffff; margin-bottom: 20px; }
+    .vault-desc { font-size: 16px; color: #999; line-height: 1.7; margin-bottom: 28px; max-width: 560px; }
+    .vault-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .vault-tag { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #555; border: 1px solid #2a2a2a; padding: 7px 14px; }
+    .price-section { background-color: #ffffff; padding: 100px 48px; border-top: 1px solid #e0e0e0; }
+    .price-section .sec-label { color: #999; }
+    .price-section .sec-title { color: #0a0a0a; }
+    .price-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 56px; }
+    .price-card { background-color: #f0f0f0; padding: 44px 36px; border: 1px solid #e0e0e0; position: relative; }
+    .price-card-dark { background-color: #0a0a0a; padding: 44px 36px; border: 1px solid #0a0a0a; position: relative; }
+    .price-plan-light { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #999; margin-bottom: 28px; }
+    .price-plan-dark { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #555; margin-bottom: 28px; }
+    .price-num-black { font-family: 'Poppins', sans-serif; font-size: 56px; font-weight: 800; letter-spacing: -2px; line-height: 1; color: #0a0a0a; margin-bottom: 6px; }
+    .price-num-white { font-family: 'Poppins', sans-serif; font-size: 56px; font-weight: 800; letter-spacing: -2px; line-height: 1; color: #ffffff; margin-bottom: 6px; }
+    .price-per-light { font-size: 13px; color: #999; margin-bottom: 36px; }
+    .price-per-dark { font-size: 13px; color: #666; margin-bottom: 36px; }
+    .price-list { list-style: none; margin-bottom: 36px; }
+    .price-list li { font-size: 14px; color: #555; padding: 10px 0; border-bottom: 1px solid #e0e0e0; display: flex; align-items: center; gap: 10px; }
+    .price-list li::before { content: '—'; font-family: 'DM Mono', monospace; font-size: 11px; color: #bbb; flex-shrink: 0; }
+    .price-list-dark { list-style: none; margin-bottom: 36px; }
+    .price-list-dark li { font-size: 14px; color: #888; padding: 10px 0; border-bottom: 1px solid #222; display: flex; align-items: center; gap: 10px; }
+    .price-list-dark li::before { content: '—'; font-family: 'DM Mono', monospace; font-size: 11px; color: #444; flex-shrink: 0; }
+    .badge { position: absolute; top: -1px; right: 32px; background: #0a0a0a; color: #fff; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; padding: 5px 14px; }
+    .btn-cta-dark { display: block; width: 100%; padding: 15px; background: #0a0a0a; color: #fff; font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600; border: none; cursor: pointer; text-align: center; text-decoration: none; }
+    .btn-cta-dark:hover { opacity: 0.85; }
+    .btn-cta-light { display: block; width: 100%; padding: 15px; background: transparent; color: #ffffff; font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600; border: 1px solid #444; cursor: pointer; text-align: center; text-decoration: none; }
+    .btn-cta-light:hover { border-color: #fff; }
+    .btn-cta-outline { display: block; width: 100%; padding: 15px; background: transparent; color: #555; font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600; border: 1px solid #ccc; cursor: pointer; text-align: center; text-decoration: none; }
+    .btn-cta-outline:hover { color: #0a0a0a; border-color: #0a0a0a; }
+    footer { background-color: #0a0a0a; border-top: 1px solid #222; padding: 40px 48px; display: flex; justify-content: space-between; align-items: center; }
+    .footer-logo { font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 800; color: #ffffff; text-decoration: none; }
+    .footer-links { display: flex; gap: 28px; }
+    .footer-links a { font-size: 13px; color: #555; text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: #fff; }
+    .footer-copy { font-family: 'DM Mono', monospace; font-size: 11px; color: #333; letter-spacing: 1px; }
+    @media (max-width: 768px) { nav { padding: 18px 24px; } .nav-links { display: none; } .hero, .how-section, .feat-section, .vault-section, .price-section { padding: 72px 24px; } .how-grid, .price-grid { grid-template-columns: 1fr; } .feat-grid { grid-template-columns: 1fr; } footer { flex-direction: column; gap: 20px; text-align: center; padding: 32px 24px; } .footer-links { flex-wrap: wrap; justify-content: center; } }
+  </style>
+</head>
+<body>
+  <nav id="navbar">
+    <a href="/" class="nav-logo">Savd</a>
+    <div class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#pricing">Pricing</a>
+      <a href="login.html">Sign in</a>
+      <a href="register.html" class="btn-nav">Start free</a>
+    </div>
+  </nav>
+  <div class="hero">
+    <p class="hero-tag">Your creative swipe file</p>
+    <h1 class="hero-title">Stop losing<br /><span class="dim">what inspires you.</span></h1>
+    <p class="hero-sub">Save viral posts, links and carousels. Organised by intent. Ready when you write.</p>
+    <div class="hero-actions">
+      <a href="register.html" class="btn-white">Start free — 35 saves</a>
+      <a href="#how" class="btn-outline">See how it works</a>
+    </div>
+  </div>
+  <div class="marquee-wrap">
+    <div class="marquee-track">
+      <span class="marquee-item">Hooks &nbsp;·&nbsp;</span><span class="marquee-item">Observations &nbsp;·&nbsp;</span><span class="marquee-item">Stories &nbsp;·&nbsp;</span><span class="marquee-item">Lessons &nbsp;·&nbsp;</span><span class="marquee-item">Proof &nbsp;·&nbsp;</span><span class="marquee-item">Contrast &nbsp;·&nbsp;</span><span class="marquee-item">Motivation &nbsp;·&nbsp;</span><span class="marquee-item">Humor &nbsp;·&nbsp;</span><span class="marquee-item">Hooks &nbsp;·&nbsp;</span><span class="marquee-item">Observations &nbsp;·&nbsp;</span><span class="marquee-item">Stories &nbsp;·&nbsp;</span><span class="marquee-item">Lessons &nbsp;·&nbsp;</span><span class="marquee-item">Proof &nbsp;·&nbsp;</span><span class="marquee-item">Contrast &nbsp;·&nbsp;</span><span class="marquee-item">Motivation &nbsp;·&nbsp;</span><span class="marquee-item">Humor &nbsp;·&nbsp;</span>
+    </div>
+  </div>
+  <div class="how-section" id="how">
+    <p class="sec-label">How it works</p>
+    <h2 class="sec-title">Three steps. <span class="dim">That's all.</span></h2>
+    <div class="how-grid">
+      <div class="how-card"><p class="how-num">01 — SAVE</p><h3 class="how-title">Save anything</h3><p class="how-desc">Paste text, a link, or upload screenshots. Works for posts from X, LinkedIn, Threads, Instagram and more. Stored permanently — even if the original gets deleted.</p></div>
+      <div class="how-card"><p class="how-num">02 — TAG</p><h3 class="how-title">Tag by intent</h3><p class="how-desc">One question when you save: why does this work? Hook. Story. Observation. Lesson. Proof. Humor. That single tag makes everything findable when you need it.</p></div>
+      <div class="how-card"><p class="how-num">03 — WRITE</p><h3 class="how-title">Write better</h3><p class="how-desc">Sit down to write. Filter by intent. Find exactly the reference you need in seconds. Your swipe file finally works instead of sitting in a notes app you never open.</p></div>
+    </div>
+  </div>
+  <div class="feat-section">
+    <p class="sec-label">Features</p>
+    <h2 class="sec-title">Built for <span style="color:#aaa;font-weight:300">writers who post.</span></h2>
+    <div class="feat-grid">
+      <div class="feat-card"><span class="feat-icon">01 — TEXT</span><h3 class="feat-title">Full text saved</h3><p class="feat-desc">Paste the complete post text. Renders beautifully as a card. Links are optional backups — your content lives in Savd permanently.</p></div>
+      <div class="feat-card"><span class="feat-icon">02 — VISUAL</span><h3 class="feat-title">Carousel viewer</h3><p class="feat-desc">Upload Instagram carousels as images. View them exactly as the original — swipeable, visual, clean.</p></div>
+      <div class="feat-card"><span class="feat-icon">03 — INTENT</span><h3 class="feat-title">Intent tags</h3><p class="feat-desc">Hook. Story. Observation. Lesson. Proof. Contrast. Motivation. Humor. Filter your entire library by what you need right now.</p></div>
+      <div class="feat-card"><span class="feat-icon">04 — PLATFORM</span><h3 class="feat-title">Platform labels</h3><p class="feat-desc">Every save tagged to its platform. Filter by X, LinkedIn, Threads, Instagram or Substack.</p></div>
+    </div>
+  </div>
+  <div class="vault-section" id="vault">
+    <p class="sec-label">Exclusive — Pro plan</p>
+    <div class="vault-inner">
+      <h2 class="vault-title">The Viral Vault.<br /><span class="dim">Hand-picked. Weekly.</span></h2>
+      <p class="vault-desc">A curated collection of posts that actually went viral. Each one hand-picked with over 1,000 likes. Organised by intent. Study what works. Write what converts.</p>
+      <p class="vault-desc" style="font-size:14px">Updated weekly across X, LinkedIn, Threads and Instagram.</p>
+      <div class="vault-tags">
+        <span class="vault-tag">X / Twitter</span><span class="vault-tag">LinkedIn</span><span class="vault-tag">Threads</span><span class="vault-tag">Instagram</span><span class="vault-tag">1,000+ likes</span><span class="vault-tag">Curated weekly</span>
+      </div>
+    </div>
+  </div>
+  <div class="price-section" id="pricing">
+    <p class="sec-label">Pricing</p>
+    <h2 class="sec-title">Simple. <span style="color:#aaa;font-weight:300">No surprises.</span></h2>
+    <div class="price-grid">
+      <div class="price-card">
+        <p class="price-plan-light">Free</p>
+        <div class="price-num-black">$0</div>
+        <p class="price-per-light">forever</p>
+        <ul class="price-list"><li>35 saves</li><li>All intent tags</li><li>Text and link saves</li><li>All platforms</li></ul>
+        <a href="register.html" class="btn-cta-outline">Get started</a>
+      </div>
+      <div class="price-card-dark">
+        <span class="badge">Popular</span>
+        <p class="price-plan-dark">Writer</p>
+        <div class="price-num-white">$5</div>
+        <p class="price-per-dark">per month</p>
+        <ul class="price-list-dark"><li>Unlimited saves</li><li>50 Viral Vault posts</li><li>Carousel image saves</li><li>Export your library</li><li>Full text search</li></ul>
+        <a href="register.html?plan=writer" class="btn-cta-light">Start Writer</a>
+      </div>
+      <div class="price-card">
+        <p class="price-plan-light">Pro</p>
+        <div class="price-num-black">$10</div>
+        <p class="price-per-light">per month</p>
+        <ul class="price-list"><li>Everything in Writer</li><li>Unlimited Viral Vault</li><li>New vault posts weekly</li><li>Priority support</li></ul>
+        <a href="register.html?plan=pro" class="btn-cta-outline">Start Pro</a>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <a href="/" class="footer-logo">Savd</a>
+    <div class="footer-links"><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="login.html">Sign in</a><a href="register.html">Register</a></div>
+    <p class="footer-copy">© 2025 Savd</p>
+  </footer>
+  <script>
+    const nav = document.getElementById('navbar');
+    window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 40); });
+  </script>
+</body>
+</html>

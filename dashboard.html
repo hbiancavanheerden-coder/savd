@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — Savd</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=DM+Mono:wght@300;400;500&family=Georgia:ital@0;1&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { background: #0a0a0a; }
+    body { background-color: #0a0a0a !important; color: #ffffff; font-family: 'Poppins', sans-serif; font-weight: 300; min-height: 100vh; }
+    .layout { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+
+    /* SIDEBAR */
+    .sidebar { background-color: #0f0f0f; border-right: 1px solid #1e1e1e; padding: 28px 20px; display: flex; flex-direction: column; gap: 20px; position: fixed; top: 0; left: 0; bottom: 0; width: 220px; overflow-y: auto; }
+    .sidebar-logo { font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 800; color: #ffffff; text-decoration: none; }
+    .sidebar-section { display: flex; flex-direction: column; gap: 2px; }
+    .sidebar-lbl { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #2a2a2a; padding: 0 10px; margin-bottom: 4px; }
+    .nav-btn { display: flex; align-items: center; gap: 10px; padding: 9px 10px; font-size: 13px; font-weight: 400; color: #666666; background: none; border: none; width: 100%; text-align: left; cursor: pointer; transition: color 0.2s, background 0.2s; font-family: 'Poppins', sans-serif; border-radius: 4px; }
+    .nav-btn:hover { color: #ffffff; background-color: #1a1a1a; }
+    .nav-btn.active { color: #ffffff; background-color: #1a1a1a; }
+    .nav-icon { font-size: 14px; width: 20px; flex-shrink: 0; }
+    .sidebar-bottom { margin-top: auto; }
+    .user-block { padding: 14px; background-color: #161616; border: 1px solid #222222; border-radius: 6px; }
+    .user-name { font-size: 13px; font-weight: 600; color: #ffffff; margin-bottom: 2px; }
+    .user-plan { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #666666; }
+    .saves-bar { margin-top: 10px; }
+    .saves-lbl { font-size: 11px; color: #555; margin-bottom: 5px; }
+    .saves-track { height: 3px; background-color: #222; border-radius: 2px; }
+    .saves-fill { height: 3px; background: linear-gradient(90deg, #ffffff, #aaaaaa); border-radius: 2px; transition: width 0.4s; }
+    .btn-upgrade-sm { display: block; width: 100%; margin-top: 10px; background: linear-gradient(135deg, #ffffff, #e0e0e0); color: #0a0a0a; border: none; padding: 9px; font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 700; cursor: pointer; border-radius: 4px; letter-spacing: 0.3px; }
+    .sign-out-btn { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #2a2a2a; background: none; border: none; cursor: pointer; padding: 12px 10px; width: 100%; text-align: left; transition: color 0.2s; }
+    .sign-out-btn:hover { color: #666; }
+
+    /* MAIN */
+    .main { margin-left: 220px; padding: 36px 44px; background-color: #0a0a0a; min-height: 100vh; }
+    .main-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; padding-bottom: 28px; border-bottom: 1px solid #1e1e1e; }
+    .main-title { font-family: 'Poppins', sans-serif; font-size: 26px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px; }
+    .main-subtitle { font-size: 13px; color: #555; margin-top: 3px; }
+    .btn-add { background: linear-gradient(135deg, #ffffff, #e8e8e8); color: #0a0a0a; border: none; padding: 12px 28px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; font-family: 'Poppins', sans-serif; border-radius: 6px; letter-spacing: 0.3px; transition: opacity 0.2s; }
+    .btn-add:hover { opacity: 0.9; }
+
+    /* FILTER BAR */
+    .filter-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 28px; }
+    .filter-btn { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: #555; background: none; border: 1px solid #1e1e1e; padding: 7px 14px; cursor: pointer; transition: all 0.2s; border-radius: 20px; }
+    .filter-btn:hover { color: #ffffff; border-color: #444; }
+    .filter-btn.active { color: #0a0a0a; background: #ffffff; border-color: #ffffff; font-weight: 600; }
+
+    /* CARDS GRID */
+    .cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: start; }
+    .cards-grid > div { min-height: 120px; }
+    @media (max-width: 1300px) { .cards-grid { grid-template-columns: repeat(2, 1fr); } }
+
+    /* BASE CARD */
+    .save-card { border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s; cursor: default; position: relative; }
+    .save-card:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,0.5); }
+
+    /* ── SOCIAL POST CARD ── */
+    .save-card { border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s; position: relative; }
+    .save-card:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
+
+    /* Light cards (Threads, LinkedIn, Instagram, Facebook) */
+    .card-threads, .card-linkedin, .card-instagram, .card-facebook, .card-x, .card-substack, .card-youtube, .card-default {
+      background: #ffffff; border: 1px solid #e8e8e8; color: #0a0a0a;
+    }
+    .card-x, .card-youtube, .card-default { background: #ffffff; border-color: #e0e0e0; }
+
+    /* CARD HEADER — profile row */
+    .card-post-header { display: flex; align-items: center; gap: 12px; padding: 16px 16px 10px; }
+    .card-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; flex-shrink: 0; color: #ffffff; }
+    .avatar-threads { background: #000000; }
+    .avatar-x { background: #000000; }
+    .avatar-linkedin { background: #0077b5; }
+    .avatar-instagram { background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+    .avatar-facebook { background: #1877f2; }
+    .avatar-substack { background: #ff6719; }
+    .avatar-youtube { background: #ff0000; }
+    .avatar-default { background: #333333; }
+    .card-post-meta { flex: 1; min-width: 0; }
+    .card-username { font-size: 14px; font-weight: 700; color: #0a0a0a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card-platform-tag { font-family: 'DM Mono', monospace; font-size: 10px; color: #aaaaaa; letter-spacing: 1px; margin-top: 1px; }
+    .intent-pill { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; font-weight: 600; flex-shrink: 0; }
+    .pill-hook { background: #fff0f0; color: #cc3333; border: 1px solid #ffcccc; }
+    .pill-story { background: #f0f4ff; color: #3355cc; border: 1px solid #ccd4ff; }
+    .pill-observation { background: #fff8f0; color: #cc6600; border: 1px solid #ffd9aa; }
+    .pill-lesson { background: #f0fff4; color: #228833; border: 1px solid #aaddbb; }
+    .pill-proof { background: #f5f5f5; color: #666666; border: 1px solid #dddddd; }
+    .pill-contrast { background: #fdf0ff; color: #8833cc; border: 1px solid #ddb3ff; }
+    .pill-motivation { background: #fffcf0; color: #997700; border: 1px solid #ffe080; }
+    .pill-humor { background: #f0feff; color: #007788; border: 1px solid #aaeeff; }
+    .pill-default { background: #f5f5f5; color: #888888; border: 1px solid #e0e0e0; }
+
+    /* POST TEXT BODY */
+    .card-post-body { padding: 4px 16px 14px; }
+    .post-text { font-size: 15px; line-height: 1.65; color: #111111; display: -webkit-box; -webkit-line-clamp: 9; -webkit-box-orient: vertical; overflow: hidden; white-space: pre-wrap; word-break: break-word; font-family: -apple-system, 'Poppins', sans-serif; }
+
+    /* LINK PREVIEW INSIDE CARD */
+    .card-link-preview { margin: 0 16px 14px; border-radius: 10px; overflow: hidden; border: 1px solid #e8e8e8; }
+    .card-link-preview-img { width: 100%; height: 180px; object-fit: cover; display: block; background: #f0f0f0; }
+    .card-link-preview-info { padding: 10px 12px; background: #fafafa; }
+    .card-link-preview-site { font-family: 'DM Mono', monospace; font-size: 10px; color: #aaa; letter-spacing: 1px; margin-bottom: 3px; }
+    .card-link-preview-title { font-size: 13px; font-weight: 600; color: #111; line-height: 1.4; }
+
+    /* VIDEO CARD */
+    .video-thumb-wrap { position: relative; margin: 0 0 0 0; }
+    .video-thumb { width: 100%; height: 200px; object-fit: cover; display: block; background: #111; }
+    .play-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 56px; height: 56px; background: rgba(0,0,0,0.7); border-radius: 50%; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); border: 2px solid rgba(255,255,255,0.5); }
+    .play-btn::after { content: ''; border-left: 20px solid #ffffff; border-top: 12px solid transparent; border-bottom: 12px solid transparent; margin-left: 5px; }
+    .card-youtube .play-btn { background: rgba(255,0,0,0.85); }
+    .video-info { padding: 10px 16px 4px; }
+    .video-title { font-size: 14px; font-weight: 600; color: #111; line-height: 1.4; }
+    .video-site { font-family: 'DM Mono', monospace; font-size: 10px; color: #aaa; margin-top: 3px; }
+
+    /* CAROUSEL */
+    .carousel-wrap { position: relative; overflow: hidden; border-radius: 0; }
+    .carousel-track { display: flex; transition: transform 0.3s ease; }
+    .carousel-slide { min-width: 100%; }
+    .carousel-slide img { width: 100%; height: 300px; object-fit: cover; display: block; }
+    .carousel-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.85); border: none; color: #0a0a0a; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.15); transition: background 0.2s; font-weight: 700; }
+    .carousel-nav:hover { background: #ffffff; }
+    .carousel-prev { left: 10px; }
+    .carousel-next { right: 10px; }
+    .carousel-dots { display: flex; justify-content: center; gap: 5px; padding: 10px 0 4px; background: #ffffff; }
+    .carousel-dot { width: 6px; height: 6px; border-radius: 50%; background: #ddd; transition: background 0.2s; cursor: pointer; }
+    .carousel-dot.active { background: #0a0a0a; }
+
+    /* CARD FOOTER */
+    .card-footer { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px 14px; border-top: 1px solid #f0f0f0; margin-top: auto; }
+    .card-footer-left { display: flex; gap: 12px; }
+    .card-action-btn { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: #bbbbbb; background: none; border: none; cursor: pointer; transition: color 0.2s; padding: 4px 0; }
+    .card-action-btn:hover { color: #0a0a0a; }
+    .card-date { font-family: 'DM Mono', monospace; font-size: 10px; color: #cccccc; }
+    .card-source-link { font-family: 'DM Mono', monospace; font-size: 10px; color: #cccccc; text-decoration: none; }
+    .card-source-link:hover { color: #888; }
+
+    /* EMPTY + LOCKED */
+    .empty-state { grid-column: 1/-1; text-align: center; padding: 80px 32px; }
+    .empty-icon { font-size: 40px; margin-bottom: 20px; color: #222; }
+    .empty-title { font-family: 'Poppins', sans-serif; font-size: 22px; font-weight: 700; color: #ffffff; margin-bottom: 10px; }
+    .empty-desc { font-size: 14px; color: #555; }
+    .vault-locked { grid-column: 1/-1; text-align: center; padding: 80px 32px; border: 1px solid #1e1e1e; border-radius: 12px; }
+    .vault-locked h3 { font-family: 'Poppins', sans-serif; font-size: 24px; font-weight: 800; color: #ffffff; margin-bottom: 12px; }
+    .vault-locked p { font-size: 14px; color: #666; margin-bottom: 28px; }
+
+    /* UPGRADE BANNER */
+    .upgrade-banner { background: linear-gradient(135deg, #1a1a1a, #141414); border: 1px solid #2a2a2a; padding: 24px 32px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; gap: 20px; border-radius: 12px; }
+    .upgrade-banner h3 { font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700; color: #ffffff; margin-bottom: 4px; }
+    .upgrade-banner p { font-size: 13px; color: #666; }
+
+    /* MODALS */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(5,5,5,0.95); z-index: 200; align-items: center; justify-content: center; padding: 24px; backdrop-filter: blur(8px); }
+    .modal-overlay.open { display: flex; }
+    .modal { background-color: #141414; border: 1px solid #2a2a2a; width: 100%; max-width: 520px; max-height: 92vh; overflow-y: auto; border-radius: 16px; }
+    .modal-header { padding: 22px 26px; border-bottom: 1px solid #1e1e1e; display: flex; justify-content: space-between; align-items: center; }
+    .modal-title { font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 700; color: #ffffff; }
+    .modal-close { background: #1e1e1e; border: none; color: #888; font-size: 16px; cursor: pointer; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+    .modal-close:hover { background: #2a2a2a; color: #ffffff; }
+    .modal-body { padding: 26px; display: flex; flex-direction: column; gap: 18px; }
+
+    /* SAVE TYPE TABS */
+    .save-type-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .type-btn { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px 12px; background: #1a1a1a; border: 2px solid #222; border-radius: 10px; cursor: pointer; transition: all 0.2s; }
+    .type-btn:hover { border-color: #444; background: #1e1e1e; }
+    .type-btn.active { border-color: #ffffff; background: #1e1e1e; }
+    .type-icon { font-size: 22px; }
+    .type-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: #666; }
+    .type-btn.active .type-label { color: #ffffff; }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: flex; flex-direction: column; gap: 14px; }
+
+    .f-group { display: flex; flex-direction: column; gap: 7px; }
+    .f-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #555; }
+    .f-input, .f-textarea, .f-select { width: 100%; background-color: #1a1a1a; border: 1px solid #2a2a2a; color: #ffffff; padding: 12px 14px; font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 300; outline: none; transition: border-color 0.2s; border-radius: 8px; }
+    .f-input:focus, .f-textarea:focus, .f-select:focus { border-color: #555; }
+    .f-input::placeholder, .f-textarea::placeholder { color: #333; }
+    .f-textarea { resize: vertical; min-height: 120px; line-height: 1.6; }
+    .f-select option { background: #1a1a1a; }
+
+    .select-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* URL PREVIEW */
+    .url-preview { background: #111; border: 1px solid #2a2a2a; border-radius: 8px; overflow: hidden; display: none; }
+    .url-preview.show { display: block; }
+    .url-preview-img { width: 100%; height: 140px; object-fit: cover; background: #1a1a1a; }
+    .url-preview-info { padding: 12px; }
+    .url-preview-title { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+    .url-preview-site { font-family: 'DM Mono', monospace; font-size: 10px; color: #555; }
+
+    /* FILE UPLOAD */
+    .upload-zone { border: 2px dashed #2a2a2a; border-radius: 10px; padding: 28px; text-align: center; cursor: pointer; transition: border-color 0.2s; }
+    .upload-zone:hover { border-color: #555; }
+    .upload-zone-icon { font-size: 28px; margin-bottom: 8px; }
+    .upload-zone-text { font-size: 13px; color: #555; }
+    .upload-zone-text span { color: #ffffff; text-decoration: underline; cursor: pointer; }
+    .upload-previews { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+    .upload-preview-thumb { width: 64px; height: 64px; border-radius: 6px; object-fit: cover; }
+
+    .btn-save { width: 100%; background: linear-gradient(135deg, #ffffff, #e8e8e8); color: #0a0a0a; border: none; padding: 14px; font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 8px; letter-spacing: 0.3px; transition: opacity 0.2s; }
+    .btn-save:hover { opacity: 0.9; }
+    .btn-save:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* PAYPAL MODAL */
+    .modal-plan-title { font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 600; color: #ffffff; margin-bottom: 4px; }
+    .modal-plan-desc { font-size: 13px; color: #666; margin-bottom: 16px; line-height: 1.6; }
+
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .sidebar { display: none; } .main { margin-left: 0; padding: 20px; } .cards-grid { grid-template-columns: 1fr; } }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <a href="index.html" class="sidebar-logo">Savd</a>
+    <div class="sidebar-section">
+      <p class="sidebar-lbl">Library</p>
+      <button class="nav-btn active" onclick="setView('all',this)"><span class="nav-icon">◻</span> All saves</button>
+      <button class="nav-btn" onclick="setView('hook',this)"><span class="nav-icon">🎣</span> Hooks</button>
+      <button class="nav-btn" onclick="setView('story',this)"><span class="nav-icon">📖</span> Stories</button>
+      <button class="nav-btn" onclick="setView('observation',this)"><span class="nav-icon">👁</span> Observations</button>
+      <button class="nav-btn" onclick="setView('lesson',this)"><span class="nav-icon">💡</span> Lessons</button>
+      <button class="nav-btn" onclick="setView('motivation',this)"><span class="nav-icon">🔥</span> Motivation</button>
+      <button class="nav-btn" onclick="setView('humor',this)"><span class="nav-icon">😄</span> Humor</button>
+      <button class="nav-btn" onclick="setView('proof',this)"><span class="nav-icon">✓</span> Proof</button>
+    </div>
+    <div class="sidebar-section">
+      <p class="sidebar-lbl">Exclusive</p>
+      <button class="nav-btn" onclick="setView('vault',this)"><span class="nav-icon">✦</span> Viral Vault</button>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="user-block">
+        <div class="user-name" id="sidebarName">—</div>
+        <div class="user-plan" id="sidebarPlan">FREE</div>
+        <div class="saves-bar" id="savesBar">
+          <div class="saves-lbl"><span id="savesUsed">0</span> / 35 saves</div>
+          <div class="saves-track"><div class="saves-fill" id="savesFill" style="width:0%"></div></div>
+        </div>
+        <button class="btn-upgrade-sm" id="upgradeBtn" onclick="openUpgrade('writer')" style="display:none">✦ Upgrade to Writer</button>
+      </div>
+      <button class="sign-out-btn" id="adminLink" onclick="window.location.href='admin.html'" style="display:none;color:#555">⚙ Admin panel</button>
+      <button class="sign-out-btn" onclick="logout()">Sign out</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="main-header">
+      <div>
+        <h1 class="main-title" id="viewTitle">All saves</h1>
+        <p class="main-subtitle" id="viewSubtitle">Everything you've saved</p>
+      </div>
+      <button class="btn-add" onclick="openSaveModal()">+ Save new</button>
+    </div>
+    <div id="upgradeBanner" style="display:none" class="upgrade-banner">
+      <div><h3>Almost at your limit</h3><p>Upgrade to Writer for unlimited saves, Viral Vault and carousel uploads.</p></div>
+      <button class="btn-add" onclick="openUpgrade('writer')" style="font-size:11px;padding:10px 20px">Upgrade — $5/mo</button>
+    </div>
+    <div class="filter-bar" id="filterBar">
+      <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+      <button class="filter-btn" onclick="setFilter('x',this)">X</button>
+      <button class="filter-btn" onclick="setFilter('linkedin',this)">LinkedIn</button>
+      <button class="filter-btn" onclick="setFilter('threads',this)">Threads</button>
+      <button class="filter-btn" onclick="setFilter('instagram',this)">Instagram</button>
+      <button class="filter-btn" onclick="setFilter('youtube',this)">YouTube</button>
+      <button class="filter-btn" onclick="setFilter('facebook',this)">Facebook</button>
+      <button class="filter-btn" onclick="setFilter('substack',this)">Substack</button>
+    </div>
+    <div class="cards-grid" id="cardsGrid">
+      <div class="empty-state"><div class="empty-icon">◻</div><h3 class="empty-title">Nothing saved yet</h3><p class="empty-desc">Click "+ Save new" to add your first post, link or carousel.</p></div>
+    </div>
+  </main>
+</div>
+
+<!-- SAVE MODAL -->
+<div class="modal-overlay" id="saveModal">
+  <div class="modal" style="max-width:540px">
+    <div class="modal-header">
+      <div>
+        <h2 class="modal-title">Save something</h2>
+        <p style="font-size:12px;color:#888;margin-top:3px;font-family:'DM Mono',monospace;letter-spacing:1px">Copy text from any post and paste it below</p>
+      </div>
+      <button class="modal-close" onclick="closeSaveModal()">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- CLIPBOARD BANNER -->
+      <div id="clipboardBanner" style="display:none;background:linear-gradient(135deg,#f0fff4,#e6ffed);border:1px solid #aaddbb;border-radius:10px;padding:14px 16px;cursor:pointer" onclick="useClipboard()">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:20px">📋</span>
+          <div style="flex:1;min-width:0">
+            <p style="font-size:11px;font-family:'DM Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;color:#228833;margin-bottom:3px">Clipboard detected — tap to use</p>
+            <p id="clipboardPreview" style="font-size:13px;color:#111;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></p>
+          </div>
+          <span style="font-size:18px;color:#228833;flex-shrink:0">→</span>
+        </div>
+      </div>
+
+      <!-- TYPE TABS -->
+      <div class="save-type-grid">
+        <button class="type-btn active" onclick="setTab('text',this)">
+          <span class="type-icon">📝</span><span class="type-label">Text post</span>
+        </button>
+        <button class="type-btn" onclick="setTab('link',this)">
+          <span class="type-icon">🔗</span><span class="type-label">Link</span>
+        </button>
+      </div>
+
+      <!-- TEXT TAB -->
+      <div class="tab-panel active" id="tab-text">
+        <div class="f-group">
+          <label class="f-label">Post text</label>
+          <textarea class="f-textarea" id="saveText" placeholder="Paste the post text here…" style="min-height:160px"></textarea>
+        </div>
+        <div class="f-group">
+          <label class="f-label">Author / @username <span style="color:#555;font-weight:300">(optional)</span></label>
+          <input type="text" class="f-input" id="saveAuthor" placeholder="@username or Name" />
+        </div>
+        <div class="f-group">
+          <label class="f-label">Screenshot <span style="color:#555;font-weight:300">(optional — upload post image)</span></label>
+          <div class="upload-zone" onclick="document.getElementById('textImageFile').click()" id="textUploadZone">
+            <div class="upload-zone-icon">📷</div>
+            <div class="upload-zone-text">Tap to upload a screenshot</div>
+          </div>
+          <input type="file" id="textImageFile" accept="image/*" style="display:none" onchange="handleTextImage(this)" />
+          <img id="textImagePreview" src="" style="display:none;width:100%;max-height:200px;object-fit:cover;border-radius:8px;margin-top:8px" />
+        </div>
+      </div>
+
+      <!-- LINK TAB -->
+      <div class="tab-panel" id="tab-link">
+        <div class="f-group">
+          <label class="f-label">Paste link</label>
+          <input type="url" class="f-input" id="saveLink" placeholder="https://…" oninput="autoDetectLink(this.value)" />
+        </div>
+
+        <!-- Loading -->
+        <div id="linkLoading" style="display:none;text-align:center;padding:16px;color:#888;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px">
+          <span style="animation:spin 1s linear infinite;display:inline-block;margin-right:8px">◌</span>FETCHING PREVIEW…
+        </div>
+
+        <!-- YouTube preview -->
+        <div id="ytThumbWrap" style="display:none;border-radius:12px;overflow:hidden;border:1px solid #e8e8e8">
+          <div style="position:relative">
+            <img id="ytThumbImg" src="" alt="" style="width:100%;height:180px;object-fit:cover;display:block" />
+            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:52px;height:52px;background:rgba(255,0,0,0.9);border-radius:50%;display:flex;align-items:center;justify-content:center">
+              <div style="border-left:18px solid #fff;border-top:11px solid transparent;border-bottom:11px solid transparent;margin-left:5px"></div>
+            </div>
+          </div>
+          <div style="padding:10px 14px;background:#f8f8f8">
+            <div style="font-family:'DM Mono',monospace;font-size:10px;color:#aaa;margin-bottom:4px" id="ytSiteLabel">YouTube</div>
+            <input type="text" class="f-input" id="ytTitle" placeholder="Paste video title…" style="background:#fff;font-size:13px;padding:8px 12px;border-radius:6px" />
+          </div>
+        </div>
+
+        <!-- General link preview -->
+        <div id="linkPreviewCard" style="display:none;background:#f8f8f8;border-radius:12px;overflow:hidden;border:1px solid #e8e8e8">
+          <img id="linkPreviewImg" src="" alt="" style="width:100%;height:160px;object-fit:cover;display:none" onerror="this.style.display='none'" />
+          <div style="padding:12px 14px">
+            <div id="linkPreviewSite" style="font-family:'DM Mono',monospace;font-size:10px;color:#aaa;letter-spacing:1px;margin-bottom:4px"></div>
+            <div id="linkPreviewTitle" style="font-size:14px;font-weight:600;color:#111;line-height:1.4"></div>
+          </div>
+        </div>
+
+        <!-- Link text field — for non-YouTube: paste the post text -->
+        <div class="f-group" id="linkTextField" style="display:none">
+          <label class="f-label">Post text <span style="color:#555;font-weight:300">(paste what the post says)</span></label>
+          <textarea class="f-textarea" id="saveLinkText" placeholder="Copy the post text and paste it here — this is what shows on your card…" style="min-height:120px"></textarea>
+        </div>
+
+        <!-- Screenshot upload for links -->
+        <div class="f-group" id="linkImageWrap" style="display:none">
+          <label class="f-label">Screenshot <span style="color:#555;font-weight:300">(optional — upload post image)</span></label>
+          <div class="upload-zone" onclick="document.getElementById('linkImageFile').click()">
+            <div class="upload-zone-icon">📷</div>
+            <div class="upload-zone-text">Tap to upload a screenshot</div>
+          </div>
+          <input type="file" id="linkImageFile" accept="image/*" style="display:none" onchange="handleLinkImage(this)" />
+          <img id="linkImagePreview" src="" style="display:none;width:100%;max-height:200px;object-fit:cover;border-radius:8px;margin-top:8px" />
+        </div>
+      </div>
+
+      <!-- SHARED FIELDS -->
+      <div class="select-row">
+        <div class="f-group">
+          <label class="f-label">Platform</label>
+          <select class="f-select" id="savePlatform">
+            <option value="">Select…</option>
+            <option value="x">X / Twitter</option>
+            <option value="threads">Threads</option>
+            <option value="linkedin">LinkedIn</option>
+            <option value="instagram">Instagram</option>
+            <option value="facebook">Facebook</option>
+            <option value="youtube">YouTube</option>
+            <option value="substack">Substack</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="f-group">
+          <label class="f-label">Intent tag</label>
+          <select class="f-select" id="saveIntent">
+            <option value="">Why does it work?</option>
+            <option value="hook">Hook</option>
+            <option value="observation">Observation</option>
+            <option value="story">Story</option>
+            <option value="lesson">Lesson</option>
+            <option value="proof">Proof</option>
+            <option value="contrast">Contrast</option>
+            <option value="motivation">Motivation</option>
+            <option value="humor">Humor</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn-save" id="saveBtn" onclick="saveItem()">Save to library</button>
+    </div>
+  </div>
+</div>
+
+<!-- UPGRADE MODAL -->
+<div class="modal-overlay" id="upgradeModal">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-header">
+      <h2 class="modal-title" id="upgradeTitle">Upgrade</h2>
+      <button class="modal-close" onclick="closeUpgrade()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p class="modal-plan-title" id="upgradePlanTitle"></p>
+      <p class="modal-plan-desc" id="upgradePlanDesc"></p>
+      <div id="pp-writer" style="display:none"><div id="paypal-button-container-P-6J913983N2908953KNIB77CA"></div></div>
+      <div id="pp-pro" style="display:none"><div id="paypal-button-container-P-9BH120751H147553JNIB77VQ"></div></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://www.paypal.com/sdk/js?client-id=BAAZgejcG8Gw9_Xmcj6eLnLXmGxtDzk5z5CgSttUaEf-HfoFq-79J8enmYrzYWZOR2qfGnOjxPfERh6qeE&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
+<script>
+  const SUPABASE_URL = 'https://rsivmsiydlowzfgvgxps.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzaXZtc2l5ZGxvd3pmZ3ZneHBzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2NTE1NTUsImV4cCI6MjA5NDIyNzU1NX0.B_vR2uugBQ5udxi0uyuLzvq7vc6SkZvtte83KDdg6R8';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  let user = JSON.parse(localStorage.getItem('savd_user') || '{}');
+  let allSaves = [];
+  let currentView = 'all';
+  let currentFilter = 'all';
+  let carouselImages = []; // base64 images for carousel
+
+  // ── INIT ──────────────────────────────────────────────────────────────────
+  async function init() {
+    // Show loading state
+    document.getElementById('cardsGrid').innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:#555;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:2px">LOADING…</div>`;
+
+    try {
+      const { data: { session }, error: sessErr } = await sb.auth.getSession();
+      if (sessErr || !session) { window.location.href = 'login.html'; return; }
+
+      // Get user profile — don't fail if missing
+      try {
+        const { data: profile } = await sb.from('users').select('*').eq('id', session.user.id).single();
+        if (profile) { user = profile; localStorage.setItem('savd_user', JSON.stringify(user)); }
+      } catch(e) {
+        // Use cached user from localStorage if Supabase fails
+        user = JSON.parse(localStorage.getItem('savd_user') || '{}');
+        if (!user.id) user = { id: session.user.id, email: session.user.email, plan: 'free', role: 'user' };
+      }
+
+      document.getElementById('sidebarName').textContent = user.name || user.email || 'User';
+      document.getElementById('sidebarPlan').textContent = (user.plan || 'free').toUpperCase();
+      if (user.role === 'admin') document.getElementById('adminLink').style.display = 'block';
+
+      await loadSaves();
+      updateBar();
+      renderCards();
+
+    } catch(e) {
+      console.error('Init error:', e);
+      document.getElementById('cardsGrid').innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:#ee5555;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:2px">Error loading. <a href="login.html" style="color:#ffffff">Sign in again</a></div>`;
+    }
+  }
+
+  async function loadSaves() {
+    try {
+      const { data, error } = await sb.from('saves').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
+      if (error) throw error;
+      allSaves = data || [];
+    } catch(e) {
+      console.error('Load saves error:', e);
+      allSaves = [];
+    }
+  }
+
+  // ── SIDEBAR BAR ────────────────────────────────────────────────────────────
+  function updateBar() {
+    const plan = user.plan || 'free';
+    const used = allSaves.length;
+    if (plan === 'free') {
+      document.getElementById('savesUsed').textContent = used;
+      document.getElementById('savesFill').style.width = Math.min((used/35)*100,100) + '%';
+      if (used >= 28) document.getElementById('upgradeBanner').style.display = 'flex';
+      document.getElementById('upgradeBtn').style.display = 'block';
+    } else {
+      document.getElementById('savesBar').style.display = 'none';
+      document.getElementById('upgradeBtn').style.display = 'none';
+      document.getElementById('upgradeBanner').style.display = 'none';
+    }
+  }
+
+  // ── VIEWS ──────────────────────────────────────────────────────────────────
+  function setView(view, btn) {
+    currentView = view;
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    const titles = { all:['All saves',"Everything you've saved"], hook:['Hooks','Opening lines that stop the scroll'], story:['Stories','Narrative posts worth studying'], observation:['Observations','Human truths and sharp insights'], lesson:['Lessons','Educational posts worth keeping'], motivation:['Motivation','Posts that push people forward'], humor:['Humor','Posts that made people laugh'], proof:['Proof','Results, data and social proof'], vault:['Viral Vault','Hand-picked posts with 1,000+ likes'] };
+    const [t,s] = titles[view] || ['Saves',''];
+    document.getElementById('viewTitle').textContent = t;
+    document.getElementById('viewSubtitle').textContent = s;
+    document.getElementById('filterBar').style.display = view === 'vault' ? 'none' : 'flex';
+    if (view === 'vault') { loadVault(); return; }
+    renderCards();
+  }
+
+  function setFilter(f, btn) {
+    currentFilter = f;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderCards();
+  }
+
+  // ── RENDER CARDS ───────────────────────────────────────────────────────────
+  function renderCards() {
+    const grid = document.getElementById('cardsGrid');
+    let items = currentView === 'all' ? allSaves : allSaves.filter(s => s.intent === currentView);
+    if (currentFilter !== 'all') items = items.filter(s => s.platform === currentFilter);
+    if (!items.length) {
+      grid.innerHTML = `<div class="empty-state"><div class="empty-icon">◻</div><h3 class="empty-title">Nothing here yet</h3><p class="empty-desc">${currentView === 'all' ? 'Click "+ Save new" to add your first post.' : 'Save something tagged as ' + currentView + '.'}</p></div>`;
+      return;
+    }
+    // Filter out any completely empty/broken saves
+    const validItems = items.filter(item => item.text || item.url || item.og_title || item.og_image || (item.images && item.images.length > 0));
+    const brokenItems = items.filter(item => !item.text && !item.url && !item.og_title && !item.og_image && (!item.images || item.images.length === 0));
+    
+    if (!validItems.length) {
+      grid.innerHTML = `<div class="empty-state"><div class="empty-icon">◻</div><h3 class="empty-title">No valid saves</h3><p class="empty-desc">Your old saves had no content. Delete them and re-save.</p></div>`;
+      return;
+    }
+    grid.innerHTML = validItems.map(item => buildCard(item)).join('');
+    // Add delete buttons for broken saves at the bottom
+    if (brokenItems.length) {
+      grid.innerHTML += `<div style="grid-column:1/-1;background:#141414;border:1px solid #222;border-radius:12px;padding:20px;text-align:center;">
+        <p style="color:#666;font-size:13px;margin-bottom:12px;">${brokenItems.length} empty save(s) found. <button onclick="deleteBroken()" style="background:#ffffff;color:#0a0a0a;border:none;padding:6px 16px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;">Delete them</button></p>
+      </div>`;
+    }
+  }
+
+  async function deleteBroken() {
+    const broken = allSaves.filter(item => !item.text && !item.url && !item.og_title && !item.og_image && (!item.images || item.images.length === 0));
+    for (const item of broken) {
+      await sb.from('saves').delete().eq('id', item.id);
+    }
+    allSaves = allSaves.filter(item => item.text || item.url || item.og_title || item.og_image || (item.images && item.images.length > 0));
+    renderCards();
+  }
+
+  function getPlatformClass(p) {
+    const map = { x:'card-x', threads:'card-threads', linkedin:'card-linkedin', instagram:'card-instagram', facebook:'card-facebook', youtube:'card-youtube', substack:'card-substack' };
+    return map[p] || 'card-default';
+  }
+
+  function getAvatarLetter(p) {
+    const map = { x:'X', threads:'T', linkedin:'in', instagram:'📷', facebook:'f', youtube:'▶', substack:'S' };
+    return map[p] || '•';
+  }
+
+  function getIntentPill(intent) {
+    if (!intent) return '';
+    return `<span class="intent-pill pill-${intent}">${intent}</span>`;
+  }
+
+  function formatDate(iso) {
+    if (!iso) return '';
+    return new Date(iso).toLocaleDateString('en-GB', { day:'numeric', month:'short' });
+  }
+
+  function buildCard(item) {
+    const pc = getPlatformClass(item.platform);
+    const avLetter = getAvatarLetter(item.platform);
+    const ip = getIntentPill(item.intent);
+    const date = formatDate(item.created_at);
+    const id = item.id;
+    const platformLabel = item.platform || 'saved';
+    const author = item.author || platformLabel;
+
+    // Force inline styles so mobile rendering can't ignore CSS classes
+    const cardStyle = 'background:#ffffff;border:1px solid #e8e8e8;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;transition:transform 0.2s;';
+
+    const avatarColors = { x:'#000000', threads:'#000000', linkedin:'#0077b5', instagram:'linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)', facebook:'#1877f2', substack:'#ff6719', youtube:'#ff0000' };
+    const avColor = avatarColors[item.platform] || '#333333';
+
+    const intentColors = { hook:'background:#fff0f0;color:#cc3333;border:1px solid #ffcccc', story:'background:#f0f4ff;color:#3355cc;border:1px solid #ccd4ff', observation:'background:#fff8f0;color:#cc6600;border:1px solid #ffd9aa', lesson:'background:#f0fff4;color:#228833;border:1px solid #aaddbb', proof:'background:#f5f5f5;color:#666;border:1px solid #ddd', contrast:'background:#fdf0ff;color:#8833cc;border:1px solid #ddb3ff', motivation:'background:#fffcf0;color:#997700;border:1px solid #ffe080', humor:'background:#f0feff;color:#007788;border:1px solid #aaeeff' };
+    const pillStyle = intentColors[item.intent] || 'background:#f5f5f5;color:#888;border:1px solid #e0e0e0';
+    const pillHtml = item.intent ? `<span style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;border-radius:20px;font-weight:600;flex-shrink:0;${pillStyle}">${item.intent}</span>` : '';
+
+    const header = `<div style="display:flex;align-items:center;gap:12px;padding:16px 16px 10px;">
+      <div style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0;color:#fff;background:${avColor}">${avLetter}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:14px;font-weight:700;color:#0a0a0a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${author}</div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:#aaa;letter-spacing:1px;margin-top:1px;">${platformLabel.toUpperCase()}</div>
+      </div>
+      ${pillHtml}
+    </div>`;
+
+    const footer = `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px 14px;border-top:1px solid #f0f0f0;margin-top:auto;">
+      <div style="display:flex;gap:12px;">
+        <button onclick="copyCard('${id}')" style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#bbb;background:none;border:none;cursor:pointer;padding:4px 0;">Copy</button>
+        <button onclick="deleteCard('${id}')" style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#bbb;background:none;border:none;cursor:pointer;padding:4px 0;">Delete</button>
+        ${item.url ? `<a href="${item.url}" target="_blank" style="font-family:'DM Mono',monospace;font-size:10px;color:#bbb;text-decoration:none;padding:4px 0;">↗ View</a>` : ''}
+      </div>
+      <span style="font-family:'DM Mono',monospace;font-size:10px;color:#ccc;">${date}</span>
+    </div>`;
+
+    const hasImage = item.images?.length > 0;
+    const imageHtml = hasImage ? `<img src="${item.images[0]}" style="width:100%;max-height:280px;object-fit:cover;display:block;" onerror="this.style.display='none'" />` : '';
+
+    // YOUTUBE
+    const isYT = item.platform === 'youtube' || (item.url && (item.url.includes('youtube.com') || item.url.includes('youtu.be')));
+    if (item.og_image && isYT) {
+      return `<div style="${cardStyle}">
+        ${header}
+        <div style="position:relative;">
+          <img src="${item.og_image}" style="width:100%;height:200px;object-fit:cover;display:block;" onerror="this.style.display='none'" />
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:56px;height:56px;background:rgba(255,0,0,0.9);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+            <div style="border-left:20px solid #fff;border-top:12px solid transparent;border-bottom:12px solid transparent;margin-left:5px;"></div>
+          </div>
+        </div>
+        ${item.og_title ? `<div style="padding:10px 16px 4px;"><div style="font-size:14px;font-weight:600;color:#111;line-height:1.4;">${item.og_title}</div><div style="font-family:'DM Mono',monospace;font-size:10px;color:#aaa;margin-top:3px;">${item.og_site||'YouTube'}</div></div>` : ''}
+        ${footer}
+      </div>`;
+    }
+
+    // LINK with OG image
+    if (item.type === 'link' && item.og_image && !hasImage) {
+      return `<div style="${cardStyle}">
+        ${header}
+        ${item.text ? `<div style="padding:4px 16px 10px;"><p style="font-size:15px;line-height:1.65;color:#111;white-space:pre-wrap;word-break:break-word;display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden;">${item.text.replace(/</g,'&lt;').replace(/\n/g,'<br>')}</p></div>` : ''}
+        <div style="margin:0 16px 14px;border-radius:10px;overflow:hidden;border:1px solid #e8e8e8;">
+          <img src="${item.og_image}" style="width:100%;height:160px;object-fit:cover;display:block;" onerror="this.style.display='none'" />
+          <div style="padding:10px 12px;background:#fafafa;">
+            <div style="font-family:'DM Mono',monospace;font-size:10px;color:#aaa;letter-spacing:1px;margin-bottom:3px;">${item.og_site||''}</div>
+            ${item.og_title ? `<div style="font-size:13px;font-weight:600;color:#111;line-height:1.4;">${item.og_title}</div>` : ''}
+          </div>
+        </div>
+        ${footer}
+      </div>`;
+    }
+
+    // TEXT POST (with optional screenshot)
+    const textContent = item.text || item.og_title || '';
+    return `<div style="${cardStyle}">
+      ${header}
+      ${imageHtml}
+      ${textContent ? `<div style="padding:4px 16px 14px;"><p style="font-size:15px;line-height:1.65;color:#111111;white-space:pre-wrap;word-break:break-word;display:-webkit-box;-webkit-line-clamp:9;-webkit-box-orient:vertical;overflow:hidden;">${textContent.replace(/</g,'&lt;').replace(/\n/g,'<br>')}</p></div>` : ''}
+      ${!textContent && !hasImage ? `<div style="padding:4px 16px 14px;"><p style="font-family:'DM Mono',monospace;font-size:11px;color:#aaa;letter-spacing:1px;">${item.og_site||item.url||'Saved'}</p></div>` : ''}
+      ${footer}
+    </div>`;
+  }
+
+  // ── CAROUSEL CONTROLS ──────────────────────────────────────────────────────
+  const slideIndex = {};
+  function initCarousel(el) { slideIndex[el.dataset.carousel] = 0; }
+  function goSlide(id, i) {
+    const track = document.getElementById('track-'+id);
+    if (!track) return;
+    slideIndex[id] = i;
+    track.style.transform = `translateX(-${i*100}%)`;
+    document.querySelectorAll(`#dots-${id} .carousel-dot`).forEach((d,idx) => d.classList.toggle('active', idx===i));
+  }
+  function nextSlide(id) {
+    const track = document.getElementById('track-'+id);
+    if (!track) return;
+    const count = parseInt(track.parentElement.dataset.count||1);
+    goSlide(id, (slideIndex[id]+1) % count);
+  }
+  function prevSlide(id) {
+    const track = document.getElementById('track-'+id);
+    if (!track) return;
+    const count = parseInt(track.parentElement.dataset.count||1);
+    goSlide(id, (slideIndex[id]-1+count) % count);
+  }
+
+  // ── COPY / DELETE ──────────────────────────────────────────────────────────
+  async function copyCard(id) {
+    const item = allSaves.find(s => s.id === id);
+    if (item) navigator.clipboard.writeText(item.text || item.url || '');
+  }
+  async function deleteCard(id) {
+    await sb.from('saves').delete().eq('id', id);
+    allSaves = allSaves.filter(s => s.id !== id);
+    updateBar(); renderCards();
+  }
+
+  // ── VAULT ──────────────────────────────────────────────────────────────────
+  async function loadVault() {
+    const canAccess = user.plan === 'pro' || user.email === 'biancavanheerden@icloud.com';
+    const grid = document.getElementById('cardsGrid');
+    if (!canAccess) {
+      grid.innerHTML = `<div class="vault-locked"><h3>✦ The Viral Vault</h3><p>Hand-picked posts with 1,000+ likes. Updated weekly. Available on the Pro plan.</p><button class="btn-add" onclick="openUpgrade('pro')" style="display:inline-block;padding:12px 28px">Upgrade to Pro — $10/mo</button></div>`;
+      return;
+    }
+    const { data } = await sb.from('vault').select('*').order('created_at', { ascending: false });
+    const items = data || [];
+    if (!items.length) { grid.innerHTML = '<div class="empty-state"><div class="empty-icon">✦</div><h3 class="empty-title">Vault is empty</h3><p class="empty-desc">Admin is curating posts. Check back soon.</p></div>'; return; }
+    grid.innerHTML = items.map(item => buildCard({...item, type:'text'})).join('');
+  }
+
+  // ── SAVE MODAL ─────────────────────────────────────────────────────────────
+  async function openSaveModal() {
+    if ((user.plan === 'free' || !user.plan) && allSaves.length >= 35) { openUpgrade('writer'); return; }
+    document.getElementById('saveModal').classList.add('open');
+
+    // Try to read clipboard
+    try {
+      const text = await navigator.clipboard.readText();
+      if (text && text.trim().length > 3) {
+        const isUrl = text.trim().startsWith('http');
+        const preview = text.trim().substring(0, 80) + (text.length > 80 ? '…' : '');
+        document.getElementById('clipboardPreview').textContent = preview;
+        document.getElementById('clipboardBanner').style.display = 'block';
+        // Store clipboard content
+        window._clipboardContent = text.trim();
+        window._clipboardIsUrl = isUrl;
+      } else {
+        document.getElementById('clipboardBanner').style.display = 'none';
+      }
+    } catch(e) {
+      // Clipboard permission denied or empty — hide banner
+      document.getElementById('clipboardBanner').style.display = 'none';
+    }
+  }
+
+  function useClipboard() {
+    const content = window._clipboardContent;
+    const isUrl = window._clipboardIsUrl;
+    if (!content) return;
+
+    if (isUrl) {
+      // Switch to link tab and populate
+      const linkBtn = document.querySelector('[onclick="setTab(\'link\',this)"]');
+      setTab('link', linkBtn);
+      document.getElementById('saveLink').value = content;
+      autoDetectLink(content);
+    } else {
+      // Switch to text tab and populate
+      const textBtn = document.querySelector('[onclick="setTab(\'text\',this)"]');
+      setTab('text', textBtn);
+      document.getElementById('saveText').value = content;
+    }
+    document.getElementById('clipboardBanner').style.display = 'none';
+  }
+
+  function closeSaveModal() { document.getElementById('saveModal').classList.remove('open'); }
+
+  let activeTab = 'text';
+  function setTab(tab, btn) {
+    activeTab = tab;
+    document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-'+tab).classList.add('active');
+  }
+
+  // ── LINK AUTO-DETECT ───────────────────────────────────────────────────────
+  const SOCIAL_PLATFORMS = ['threads.net','threads.com','instagram.com','linkedin.com','facebook.com','fb.com','twitter.com','x.com','tiktok.com'];
+
+  function getYouTubeId(url) {
+    const patterns = [/youtube\.com\/watch\?v=([^&]+)/,/youtu\.be\/([^?&]+)/,/youtube\.com\/embed\/([^?&]+)/,/youtube\.com\/shorts\/([^?&]+)/];
+    for (const p of patterns) { const m = url.match(p); if (m) return m[1]; }
+    return null;
+  }
+
+  function detectPlatform(url) {
+    if (url.includes('instagram.com')) return 'instagram';
+    if (url.includes('threads.net') || url.includes('threads.com')) return 'threads';
+    if (url.includes('linkedin.com')) return 'linkedin';
+    if (url.includes('facebook.com') || url.includes('fb.com')) return 'facebook';
+    if (url.includes('substack.com')) return 'substack';
+    if (url.includes('twitter.com') || url.includes('x.com')) return 'x';
+    if (url.includes('youtube.com') || url.includes('youtu.be')) return 'youtube';
+    return '';
+  }
+
+  let fetchTimer;
+  window._pendingOG = {};
+  window._textImageB64 = null;
+  window._linkImageB64 = null;
+
+  function autoDetectLink(url) {
+    clearTimeout(fetchTimer);
+    window._pendingOG = {};
+    if (!url || !url.startsWith('http')) {
+      document.getElementById('ytThumbWrap').style.display = 'none';
+      document.getElementById('linkPreviewCard').style.display = 'none';
+      document.getElementById('linkTextField').style.display = 'none';
+      document.getElementById('linkImageWrap').style.display = 'none';
+      document.getElementById('linkLoading').style.display = 'none';
+      return;
+    }
+
+    // Auto-set platform
+    const detected = detectPlatform(url);
+    if (detected) document.getElementById('savePlatform').value = detected;
+
+    // YouTube — instant thumbnail
+    const ytId = getYouTubeId(url);
+    if (ytId) {
+      const thumbUrl = `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg`;
+      window._pendingOG = { og_image: thumbUrl, og_site: 'YouTube', og_title: '' };
+      document.getElementById('ytThumbImg').src = thumbUrl;
+      document.getElementById('ytThumbWrap').style.display = 'block';
+      document.getElementById('ytSiteLabel').textContent = url.includes('shorts') ? 'YouTube Shorts' : 'YouTube';
+      document.getElementById('linkPreviewCard').style.display = 'none';
+      document.getElementById('linkTextField').style.display = 'none';
+      document.getElementById('linkImageWrap').style.display = 'none';
+      document.getElementById('linkLoading').style.display = 'none';
+      return;
+    }
+
+    // All other links — show text + image upload, try OG fetch in background
+    document.getElementById('ytThumbWrap').style.display = 'none';
+    document.getElementById('linkTextField').style.display = 'block';
+    document.getElementById('linkImageWrap').style.display = 'block';
+    document.getElementById('linkLoading').style.display = 'block';
+    document.getElementById('linkPreviewCard').style.display = 'none';
+
+    fetchTimer = setTimeout(async () => {
+      const domain = url.replace(/^https?:\/\//,'').split('/')[0];
+      try {
+        let og = null;
+        try {
+          const { data: cached } = await sb.from('og_cache').select('*').eq('url', url).single();
+          if (cached) og = { og_title: cached.og_title, og_image: cached.og_image, og_site: cached.og_site };
+        } catch(e) {}
+
+        if (!og) {
+          // Try multiple free OG services with fallbacks
+          let fetched = false;
+
+          // Method 1: opengraph.io (has our API key, best quality)
+          try {
+            const r = await fetch(`https://opengraph.io/api/1.1/site/${encodeURIComponent(url)}?app_id=81b74706-857e-4154-aab9-3d35197ede77`);
+            const d = await r.json();
+            if (d.hybridGraph || d.openGraph) {
+              const g = d.hybridGraph || d.openGraph;
+              og = { og_title: g.title || '', og_image: g.image?.url || g.image || '', og_site: g.site_name || domain };
+              fetched = true;
+            }
+          } catch(e) {}
+
+          // Method 2: jsonlink.io fallback
+          if (!fetched) {
+            try {
+              const r = await fetch(`https://jsonlink.io/api/extract?url=${encodeURIComponent(url)}`);
+              const d = await r.json();
+              if (d.title) {
+                og = { og_title: d.title || '', og_image: d.images?.[0] || '', og_site: d.domain || domain };
+                fetched = true;
+              }
+            } catch(e) {}
+          }
+
+          // Method 3: microlink.io fallback
+          if (!fetched) {
+            try {
+              const r = await fetch(`https://api.microlink.io?url=${encodeURIComponent(url)}`);
+              const d = await r.json();
+              if (d.data) {
+                og = { og_title: d.data.title || '', og_image: d.data.image?.url || '', og_site: d.data.publisher || domain };
+                fetched = true;
+              }
+            } catch(e) {}
+          }
+
+          if (!og) og = { og_title: '', og_image: '', og_site: domain };
+          try { await sb.from('og_cache').upsert({ url, ...og }, { onConflict: 'url' }); } catch(e) {}
+        }
+
+        window._pendingOG = og;
+        document.getElementById('linkPreviewSite').textContent = og.og_site || domain;
+        document.getElementById('linkPreviewTitle').textContent = og.og_title || '';
+        if (og.og_image) { document.getElementById('linkPreviewImg').src = og.og_image; document.getElementById('linkPreviewImg').style.display = 'block'; }
+        document.getElementById('linkPreviewCard').style.display = 'block';
+      } catch(e) {
+        window._pendingOG = { og_site: domain, og_title: '', og_image: '' };
+        document.getElementById('linkPreviewSite').textContent = domain;
+        document.getElementById('linkPreviewCard').style.display = 'block';
+      }
+      document.getElementById('linkLoading').style.display = 'none';
+    }, 600);
+  }
+
+  function handleTextImage(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      window._textImageB64 = e.target.result;
+      const preview = document.getElementById('textImagePreview');
+      preview.src = e.target.result;
+      preview.style.display = 'block';
+      document.getElementById('textUploadZone').style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function handleLinkImage(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      window._linkImageB64 = e.target.result;
+      const preview = document.getElementById('linkImagePreview');
+      preview.src = e.target.result;
+      preview.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // ── CAROUSEL UPLOAD ────────────────────────────────────────────────────────
+  function handleCarouselUpload(input) {
+    carouselImages = [];
+    const previews = document.getElementById('carouselPreviews');
+    previews.innerHTML = '';
+    const files = Array.from(input.files);
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        carouselImages.push(e.target.result);
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        img.className = 'upload-preview-thumb';
+        previews.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // ── SAVE ITEM ──────────────────────────────────────────────────────────────
+  async function saveItem() {
+    const intent = document.getElementById('saveIntent').value;
+    const platform = document.getElementById('savePlatform').value;
+    if (!platform) { alert('Please select a platform.'); return; }
+
+    const btn = document.getElementById('saveBtn');
+    btn.disabled = true; btn.textContent = 'Saving…';
+
+    const item = { user_id: user.id, intent: intent||null, platform, type: activeTab };
+
+    if (activeTab === 'text') {
+      item.text = document.getElementById('saveText').value.trim();
+      item.author = document.getElementById('saveAuthor').value.trim() || null;
+      if (!item.text) { alert('Please paste some post text.'); btn.disabled=false; btn.textContent='Save to library'; return; }
+      if (window._textImageB64) item.images = [window._textImageB64];
+    }
+    else if (activeTab === 'link') {
+      item.url = document.getElementById('saveLink').value.trim();
+      if (!item.url) { alert('Please enter a URL.'); btn.disabled=false; btn.textContent='Save to library'; return; }
+      const ytId = getYouTubeId(item.url);
+      if (ytId) {
+        item.og_image = `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg`;
+        item.og_site = document.getElementById('ytSiteLabel')?.textContent || 'YouTube';
+        item.og_title = document.getElementById('ytTitle')?.value.trim() || null;
+      } else {
+        item.text = document.getElementById('saveLinkText')?.value.trim() || null;
+        item.og_image = window._linkImageB64 || window._pendingOG?.og_image || null;
+        item.og_title = window._pendingOG?.og_title || null;
+        item.og_site = window._pendingOG?.og_site || item.url.replace(/^https?:\/\//,'').split('/')[0];
+        if (window._linkImageB64) item.images = [window._linkImageB64];
+      }
+      window._pendingOG = {};
+    }
+
+    const { data, error } = await sb.from('saves').insert(item).select().single();
+    if (error) { alert('Error saving: ' + error.message); btn.disabled=false; btn.textContent='Save to library'; return; }
+
+    allSaves.unshift(data);
+    updateBar();
+    closeSaveModal();
+    if (currentView !== 'vault') renderCards();
+
+    // Reset form
+    ['saveText','saveAuthor','saveLink','saveLinkText','ytTitle'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+    document.getElementById('saveIntent').value='';
+    document.getElementById('savePlatform').value='';
+    document.getElementById('linkPreviewCard').style.display='none';
+    document.getElementById('linkTextField').style.display='none';
+    document.getElementById('linkImageWrap').style.display='none';
+    document.getElementById('linkLoading').style.display='none';
+    document.getElementById('ytThumbWrap').style.display='none';
+    const tPrev = document.getElementById('textImagePreview'); if(tPrev) { tPrev.style.display='none'; tPrev.src=''; }
+    const lPrev = document.getElementById('linkImagePreview'); if(lPrev) { lPrev.style.display='none'; lPrev.src=''; }
+    const tZone = document.getElementById('textUploadZone'); if(tZone) tZone.style.display='block';
+    window._pendingOG={}; window._textImageB64=null; window._linkImageB64=null;
+    btn.disabled=false; btn.textContent='Save to library';
+  }
+
+  // ── UPGRADE / PAYPAL ───────────────────────────────────────────────────────
+  let ppWriterDone = false, ppProDone = false;
+  function openUpgrade(plan) {
+    document.getElementById('pp-writer').style.display = plan==='writer'?'block':'none';
+    document.getElementById('pp-pro').style.display = plan==='pro'?'block':'none';
+    document.getElementById('upgradeTitle').textContent = plan==='writer'?'Upgrade to Writer':'Upgrade to Pro';
+    document.getElementById('upgradePlanTitle').textContent = plan==='writer'?'Writer — $5/month':'Pro — $10/month';
+    document.getElementById('upgradePlanDesc').textContent = plan==='writer'?'Unlimited saves, 50 Viral Vault posts, carousel uploads, export and full text search.':'Everything in Writer plus unlimited Viral Vault, updated weekly.';
+    document.getElementById('upgradeModal').classList.add('open');
+    if (plan==='writer'&&!ppWriterDone) {
+      ppWriterDone=true;
+      paypal.Buttons({style:{shape:'rect',color:'black',layout:'vertical',label:'subscribe'},createSubscription:(d,a)=>a.subscription.create({plan_id:'P-6J913983N2908953KNIB77CA'}),onApprove:async(d)=>{await sb.from('users').update({plan:'writer',paypal_subscription_id:d.subscriptionID}).eq('id',user.id);user.plan='writer';localStorage.setItem('savd_user',JSON.stringify(user));closeUpgrade();updateBar();document.getElementById('sidebarPlan').textContent='WRITER';}}).render('#paypal-button-container-P-6J913983N2908953KNIB77CA');
+    }
+    if (plan==='pro'&&!ppProDone) {
+      ppProDone=true;
+      paypal.Buttons({style:{shape:'rect',color:'black',layout:'vertical',label:'subscribe'},createSubscription:(d,a)=>a.subscription.create({plan_id:'P-9BH120751H147553JNIB77VQ'}),onApprove:async(d)=>{await sb.from('users').update({plan:'pro',paypal_subscription_id:d.subscriptionID}).eq('id',user.id);user.plan='pro';localStorage.setItem('savd_user',JSON.stringify(user));closeUpgrade();updateBar();document.getElementById('sidebarPlan').textContent='PRO';}}).render('#paypal-button-container-P-9BH120751H147553JNIB77VQ');
+    }
+  }
+  function closeUpgrade() { document.getElementById('upgradeModal').classList.remove('open'); }
+
+  document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', e => { if(e.target===e.currentTarget) e.currentTarget.classList.remove('open'); }));
+  async function logout() { await sb.auth.signOut(); localStorage.removeItem('savd_user'); window.location.href='login.html'; }
+
+  // Also need to add og_title, og_image, og_site, author, images columns to saves table
+  // Run in Supabase SQL Editor:
+  // alter table public.saves add column if not exists og_title text;
+  // alter table public.saves add column if not exists og_image text;
+  // alter table public.saves add column if not exists og_site text;
+  // alter table public.saves add column if not exists author text;
+  // alter table public.saves add column if not exists images text[];
+
+  init();
+</script>
+</body>
+</html>

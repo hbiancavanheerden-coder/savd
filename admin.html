@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Savd</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { background: #0a0a0a; }
+    body { background-color: #0a0a0a !important; color: #ffffff; font-family: 'Poppins', sans-serif; font-weight: 300; min-height: 100vh; }
+    .layout { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+    .sidebar { background-color: #0f0f0f; border-right: 1px solid #1e1e1e; padding: 28px 20px; display: flex; flex-direction: column; gap: 24px; position: fixed; top: 0; left: 0; bottom: 0; width: 220px; }
+    .sidebar-logo { font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 800; color: #ffffff; text-decoration: none; }
+    .admin-badge { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: #0a0a0a; background-color: #ffffff; padding: 2px 8px; display: inline-block; margin-top: 4px; }
+    .nav-btn { display: flex; align-items: center; gap: 10px; padding: 9px 10px; font-size: 13px; font-weight: 400; color: #666666; background: none; border: none; width: 100%; text-align: left; cursor: pointer; transition: color 0.2s, background 0.2s; font-family: 'Poppins', sans-serif; }
+    .nav-btn:hover { color: #ffffff; background-color: #1a1a1a; }
+    .nav-btn.active { color: #ffffff; background-color: #1a1a1a; }
+    .nav-icon { font-size: 13px; width: 18px; }
+    .sign-out-btn { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #2a2a2a; background: none; border: none; cursor: pointer; padding: 10px 0; margin-top: auto; transition: color 0.2s; }
+    .sign-out-btn:hover { color: #666666; }
+    .main { margin-left: 220px; padding: 36px 44px; background-color: #0a0a0a; min-height: 100vh; }
+    .page { display: none; }
+    .page.active { display: block; }
+    .page-header { margin-bottom: 36px; padding-bottom: 28px; border-bottom: 1px solid #1e1e1e; display: flex; justify-content: space-between; align-items: flex-start; }
+    .page-title { font-family: 'Poppins', sans-serif; font-size: 26px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px; }
+    .page-subtitle { font-size: 13px; color: #555555; margin-top: 3px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin-bottom: 40px; }
+    .stat-card { background-color: #141414; border: 1px solid #1e1e1e; padding: 24px; }
+    .stat-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #555555; margin-bottom: 10px; }
+    .stat-value { font-family: 'Poppins', sans-serif; font-size: 36px; font-weight: 800; color: #ffffff; letter-spacing: -1px; line-height: 1; }
+    .stat-sub { font-size: 11px; color: #333333; margin-top: 5px; }
+    .section-title { font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 700; color: #ffffff; margin-bottom: 20px; }
+    .revenue-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-bottom: 40px; }
+    .revenue-card { background-color: #141414; border: 1px solid #1e1e1e; padding: 24px; }
+    .revenue-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #555555; margin-bottom: 8px; }
+    .revenue-value { font-family: 'Poppins', sans-serif; font-size: 28px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px; }
+    table { width: 100%; border-collapse: collapse; }
+    th { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #444444; padding: 10px 14px; border-bottom: 1px solid #1e1e1e; text-align: left; }
+    td { padding: 12px 14px; border-bottom: 1px solid #1a1a1a; font-size: 13px; color: #aaaaaa; }
+    tr:hover td { background-color: #111111; }
+    .plan-badge { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; padding: 2px 9px; display: inline-block; }
+    .plan-free { color: #555555; border: 1px solid #222222; }
+    .plan-writer, .plan-pro { color: #0a0a0a; background-color: #ffffff; }
+    .btn-primary { background-color: #ffffff; color: #0a0a0a; border: none; padding: 11px 24px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Poppins', sans-serif; }
+    .btn-primary:hover { opacity: 0.85; }
+    .vault-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2px; margin-top: 20px; }
+    .vault-card { background-color: #141414; border: 1px solid #1e1e1e; padding: 22px; }
+    .vault-card-meta { display: flex; justify-content: space-between; margin-bottom: 10px; }
+    .vault-card-text { font-size: 13px; color: #666666; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 14px; }
+    .vault-card-actions { padding-top: 10px; border-top: 1px solid #1e1e1e; }
+    .btn-sm { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: #444444; background: none; border: none; cursor: pointer; transition: color 0.2s; padding: 0; }
+    .btn-sm:hover { color: #ee5555; }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(10,10,10,0.94); z-index: 200; align-items: center; justify-content: center; padding: 24px; }
+    .modal-overlay.open { display: flex; }
+    .modal { background-color: #141414; border: 1px solid #222222; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
+    .modal-header { padding: 22px 26px; border-bottom: 1px solid #1e1e1e; display: flex; justify-content: space-between; align-items: center; }
+    .modal-title { font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 700; color: #ffffff; }
+    .modal-close { background: none; border: none; color: #555555; font-size: 18px; cursor: pointer; }
+    .modal-close:hover { color: #ffffff; }
+    .modal-body { padding: 26px; display: flex; flex-direction: column; gap: 16px; }
+    .f-label { display: block; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #555555; margin-bottom: 7px; }
+    .f-input, .f-textarea, .f-select { width: 100%; background-color: #1a1a1a; border: 1px solid #222222; color: #ffffff; padding: 11px 14px; font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 300; outline: none; transition: border-color 0.2s; }
+    .f-input:focus, .f-textarea:focus, .f-select:focus { border-color: #555555; }
+    .f-input::placeholder, .f-textarea::placeholder { color: #333333; }
+    .f-textarea { resize: vertical; min-height: 90px; }
+    .f-select option { background-color: #1a1a1a; }
+    .btn-save { width: 100%; background-color: #ffffff; color: #0a0a0a; border: none; padding: 13px; font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; }
+    .btn-save:hover { opacity: 0.85; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .sidebar { display: none; } .main { margin-left: 0; padding: 24px; } .stats-grid { grid-template-columns: repeat(2,1fr); } .revenue-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div>
+      <a href="index.html" class="sidebar-logo">Savd</a>
+      <div><span class="admin-badge">Admin</span></div>
+    </div>
+    <nav style="display:flex;flex-direction:column;gap:2px">
+      <button class="nav-btn active" onclick="showPage('overview',this)"><span class="nav-icon">◻</span> Overview</button>
+      <button class="nav-btn" onclick="showPage('users',this)"><span class="nav-icon">○</span> Users</button>
+      <button class="nav-btn" onclick="showPage('vault',this)"><span class="nav-icon">✦</span> Viral Vault</button>
+      <a href="dashboard.html" class="nav-btn" style="text-decoration:none"><span class="nav-icon">◈</span> My Dashboard</a>
+    </nav>
+    <button class="sign-out-btn" onclick="logout()">Sign out</button>
+  </aside>
+
+  <main class="main">
+    <div class="page active" id="page-overview">
+      <div class="page-header"><div><h1 class="page-title">Overview</h1><p class="page-subtitle">Savd at a glance</p></div></div>
+      <div class="stats-grid">
+        <div class="stat-card"><p class="stat-label">Total users</p><div class="stat-value" id="statTotal">—</div><p class="stat-sub">All time</p></div>
+        <div class="stat-card"><p class="stat-label">Free</p><div class="stat-value" id="statFree">—</div><p class="stat-sub">Active accounts</p></div>
+        <div class="stat-card"><p class="stat-label">Writer ($5)</p><div class="stat-value" id="statWriter">—</div><p class="stat-sub">Paying users</p></div>
+        <div class="stat-card"><p class="stat-label">Pro ($10)</p><div class="stat-value" id="statPro">—</div><p class="stat-sub">Paying users</p></div>
+      </div>
+      <h2 class="section-title">Revenue</h2>
+      <div class="revenue-grid">
+        <div class="revenue-card"><p class="revenue-label">Monthly recurring</p><div class="revenue-value" id="revMRR">$0</div></div>
+        <div class="revenue-card"><p class="revenue-label">Writer revenue</p><div class="revenue-value" id="revWriter">$0</div></div>
+        <div class="revenue-card"><p class="revenue-label">Pro revenue</p><div class="revenue-value" id="revPro">$0</div></div>
+      </div>
+    </div>
+    <div class="page" id="page-users">
+      <div class="page-header"><div><h1 class="page-title">Users</h1><p class="page-subtitle">All registered accounts</p></div></div>
+      <table><thead><tr><th>Name</th><th>Email</th><th>Plan</th><th>Joined</th></tr></thead><tbody id="usersBody"><tr><td colspan="4" style="text-align:center;color:#444;padding:40px">Loading…</td></tr></tbody></table>
+    </div>
+    <div class="page" id="page-vault">
+      <div class="page-header">
+        <div><h1 class="page-title">Viral Vault</h1><p class="page-subtitle">Curated posts with 1,000+ likes</p></div>
+        <button class="btn-primary" onclick="openVaultModal()">+ Add post</button>
+      </div>
+      <div class="vault-grid" id="vaultGrid"><p style="color:#444;font-size:13px">Loading…</p></div>
+    </div>
+  </main>
+</div>
+
+<div class="modal-overlay" id="vaultModal">
+  <div class="modal">
+    <div class="modal-header"><h2 class="modal-title">Add to Viral Vault</h2><button class="modal-close" onclick="closeVaultModal()">✕</button></div>
+    <div class="modal-body">
+      <div><label class="f-label">Post text</label><textarea class="f-textarea" id="vaultText" placeholder="Paste the full post text…"></textarea></div>
+      <div><label class="f-label">Original URL (optional)</label><input type="url" class="f-input" id="vaultUrl" placeholder="https://…" /></div>
+      <div><label class="f-label">Intent tag</label>
+        <select class="f-select" id="vaultIntent"><option value="">Select intent</option><option value="hook">Hook</option><option value="observation">Observation</option><option value="story">Story</option><option value="lesson">Lesson</option><option value="proof">Proof</option><option value="contrast">Contrast</option><option value="motivation">Motivation</option><option value="humor">Humor</option></select>
+      </div>
+      <div><label class="f-label">Platform</label>
+        <select class="f-select" id="vaultPlatform"><option value="">Select platform</option><option value="x">X / Twitter</option><option value="linkedin">LinkedIn</option><option value="threads">Threads</option><option value="instagram">Instagram</option><option value="substack">Substack</option></select>
+      </div>
+      <div><label class="f-label">Likes count</label><input type="number" class="f-input" id="vaultLikes" placeholder="e.g. 2400" min="1000" /></div>
+      <button class="btn-save" onclick="addVaultPost()">Add to Vault</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = 'https://rsivmsiydlowzfgvgxps.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzaXZtc2l5ZGxvd3pmZ3ZneHBzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2NTE1NTUsImV4cCI6MjA5NDIyNzU1NX0.B_vR2uugBQ5udxi0uyuLzvq7vc6SkZvtte83KDdg6R8';
+  const ADMIN_EMAIL = 'biancavanheerden@icloud.com';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  async function init() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session || session.user.email !== ADMIN_EMAIL) { window.location.href = 'login.html'; return; }
+    loadStats();
+  }
+
+  async function loadStats() {
+    const { data: users } = await sb.from('users').select('plan');
+    if (!users) return;
+    const total = users.length;
+    const free = users.filter(u => u.plan === 'free').length;
+    const writer = users.filter(u => u.plan === 'writer').length;
+    const pro = users.filter(u => u.plan === 'pro').length;
+    document.getElementById('statTotal').textContent = total;
+    document.getElementById('statFree').textContent = free;
+    document.getElementById('statWriter').textContent = writer;
+    document.getElementById('statPro').textContent = pro;
+    const w = writer * 5, p = pro * 10;
+    document.getElementById('revMRR').textContent = '$' + (w + p);
+    document.getElementById('revWriter').textContent = '$' + w;
+    document.getElementById('revPro').textContent = '$' + p;
+  }
+
+  async function loadUsers() {
+    const { data: users } = await sb.from('users').select('*').order('created_at', { ascending: false });
+    const tbody = document.getElementById('usersBody');
+    if (!users?.length) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#444;padding:40px">No users yet</td></tr>'; return; }
+    tbody.innerHTML = users.map(u => `<tr><td style="color:#ffffff;font-weight:500">${u.name||'—'}</td><td style="color:#666">${u.email}</td><td><span class="plan-badge plan-${u.plan}">${u.plan}</span></td><td style="font-family:'DM Mono',monospace;font-size:11px;color:#444">${new Date(u.created_at).toLocaleDateString()}</td></tr>`).join('');
+  }
+
+  async function loadVault() {
+    const { data } = await sb.from('vault').select('*').order('created_at', { ascending: false });
+    const grid = document.getElementById('vaultGrid');
+    const items = data || [];
+    if (!items.length) { grid.innerHTML = '<p style="color:#444;font-size:13px">No vault posts yet.</p>'; return; }
+    grid.innerHTML = items.map(p => `<div class="vault-card">
+      <div class="vault-card-meta">
+        <span style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#555">${p.platform}</span>
+        <span style="font-family:'DM Mono',monospace;font-size:10px;color:#444">♥ ${(p.likes||0).toLocaleString()}</span>
+      </div>
+      <p class="vault-card-text">${(p.text||'').replace(/</g,'&lt;')}</p>
+      <div class="vault-card-actions"><button class="btn-sm" onclick="removeVault('${p.id}')">Remove</button></div>
+    </div>`).join('');
+  }
+
+  function showPage(page, btn) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('page-'+page).classList.add('active');
+    btn.classList.add('active');
+    if (page === 'users') loadUsers();
+    if (page === 'vault') loadVault();
+    if (page === 'overview') loadStats();
+  }
+
+  function openVaultModal() { document.getElementById('vaultModal').classList.add('open'); }
+  function closeVaultModal() { document.getElementById('vaultModal').classList.remove('open'); }
+
+  async function addVaultPost() {
+    const text = document.getElementById('vaultText').value.trim();
+    const url = document.getElementById('vaultUrl').value.trim();
+    const intent = document.getElementById('vaultIntent').value;
+    const platform = document.getElementById('vaultPlatform').value;
+    const likes = parseInt(document.getElementById('vaultLikes').value) || 0;
+    if (!text || !intent || !platform) { alert('Please fill in text, intent and platform.'); return; }
+    const { error } = await sb.from('vault').insert({ text, url, intent, platform, likes });
+    if (error) { alert('Error: ' + error.message); return; }
+    closeVaultModal(); loadVault();
+    ['vaultText','vaultUrl','vaultLikes'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('vaultIntent').value = ''; document.getElementById('vaultPlatform').value = '';
+  }
+
+  async function removeVault(id) {
+    if (!confirm('Remove this post from the Vault?')) return;
+    await sb.from('vault').delete().eq('id', id);
+    loadVault();
+  }
+
+  document.getElementById('vaultModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeVaultModal(); });
+  async function logout() { await sb.auth.signOut(); localStorage.removeItem('savd_user'); window.location.href = 'login.html'; }
+
+  init();
+</script>
+</body>
+</html>

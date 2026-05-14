@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign in — Savd</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { background: #0a0a0a; }
+    body { background-color: #0a0a0a !important; color: #ffffff; font-family: 'Poppins', sans-serif; font-weight: 300; min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; }
+    .left-panel { background-color: #111111; padding: 56px; display: flex; flex-direction: column; justify-content: space-between; border-right: 1px solid #222222; }
+    .panel-logo { font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 800; color: #ffffff; text-decoration: none; }
+    .panel-title { font-family: 'Poppins', sans-serif; font-size: clamp(32px, 3.5vw, 48px); font-weight: 800; line-height: 1.1; letter-spacing: -1.5px; color: #ffffff; margin-bottom: 20px; }
+    .panel-title-dim { color: #555555; font-weight: 300; }
+    .panel-desc { font-size: 15px; color: #888888; line-height: 1.7; max-width: 340px; }
+    .panel-bottom { font-family: 'DM Mono', monospace; font-size: 11px; color: #333333; letter-spacing: 2px; text-transform: uppercase; }
+    .right-panel { background-color: #0a0a0a; padding: 56px; display: flex; flex-direction: column; justify-content: center; max-width: 420px; margin: 0 auto; width: 100%; }
+    .form-title { font-family: 'Poppins', sans-serif; font-size: 28px; font-weight: 800; color: #ffffff; margin-bottom: 8px; letter-spacing: -0.5px; }
+    .form-subtitle { font-size: 14px; color: #888888; margin-bottom: 36px; }
+    .form-subtitle a { color: #ffffff; text-decoration: none; border-bottom: 1px solid #333333; }
+    .form-group { margin-bottom: 20px; }
+    .form-label { display: block; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #666666; margin-bottom: 8px; }
+    .form-input { width: 100%; background-color: #141414; border: 1px solid #222222; color: #ffffff; padding: 13px 15px; font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 300; outline: none; transition: border-color 0.2s; }
+    .form-input:focus { border-color: #555555; }
+    .form-input::placeholder { color: #444444; }
+    .form-forgot { text-align: right; margin-top: -12px; margin-bottom: 20px; }
+    .form-forgot a { font-size: 12px; color: #666666; text-decoration: none; font-family: 'DM Mono', monospace; letter-spacing: 1px; }
+    .form-forgot a:hover { color: #ffffff; }
+    .global-error { font-size: 12px; color: #ee5555; margin-bottom: 12px; font-family: 'DM Mono', monospace; min-height: 16px; display: none; }
+    .btn-submit { width: 100%; background-color: #ffffff; color: #0a0a0a; border: none; padding: 15px; font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+    .btn-submit:hover { opacity: 0.85; }
+    .btn-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+    @media (max-width: 768px) { body { grid-template-columns: 1fr; } .left-panel { display: none; } .right-panel { padding: 48px 24px; max-width: 100%; } }
+  </style>
+</head>
+<body>
+  <div class="left-panel">
+    <a href="index.html" class="panel-logo">Savd</a>
+    <div>
+      <h2 class="panel-title">Welcome<br /><span class="panel-title-dim">back.</span></h2>
+      <p class="panel-desc">Your swipe file is waiting. Everything you saved, organised and ready.</p>
+    </div>
+    <p class="panel-bottom">Savd — Save what inspires you</p>
+  </div>
+  <div class="right-panel">
+    <h1 class="form-title">Sign in</h1>
+    <p class="form-subtitle">No account? <a href="register.html">Create one free</a></p>
+    <form id="loginForm" novalidate>
+      <div class="form-group">
+        <label class="form-label">Email address</label>
+        <input type="email" id="email" class="form-input" placeholder="you@example.com" autocomplete="email" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" id="password" class="form-input" placeholder="Your password" autocomplete="current-password" />
+      </div>
+      <div class="form-forgot"><a href="forgot.html">Forgot password?</a></div>
+      <p class="global-error" id="globalError"></p>
+      <button type="submit" class="btn-submit" id="submitBtn">Sign in</button>
+    </form>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = 'https://rsivmsiydlowzfgvgxps.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzaXZtc2l5ZGxvd3pmZ3ZneHBzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2NTE1NTUsImV4cCI6MjA5NDIyNzU1NX0.B_vR2uugBQ5udxi0uyuLzvq7vc6SkZvtte83KDdg6R8';
+    const ADMIN_EMAIL = 'biancavanheerden@icloud.com';
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim().toLowerCase();
+      const password = document.getElementById('password').value;
+      if (!email || !password) return;
+
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true; btn.textContent = 'Signing in…';
+
+      try {
+        const { data, error } = await sb.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+
+        // Get user profile
+        const { data: profile } = await sb.from('users').select('*').eq('id', data.user.id).single();
+
+        const user = profile || { id: data.user.id, email, plan: 'free', role: email === ADMIN_EMAIL ? 'admin' : 'user' };
+        localStorage.setItem('savd_user', JSON.stringify(user));
+
+        // Everyone goes to dashboard — admin has a link to admin panel from there
+        window.location.href = 'dashboard.html';
+      } catch (err) {
+        const errEl = document.getElementById('globalError');
+        errEl.textContent = err.message === 'Invalid login credentials' ? 'Invalid email or password' : err.message;
+        errEl.style.display = 'block';
+        btn.disabled = false; btn.textContent = 'Sign in';
+      }
+    });
+  </script>
+</body>
+</html>

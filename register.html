@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create account — Savd</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { background: #0a0a0a; }
+    body { background-color: #0a0a0a !important; color: #ffffff; font-family: 'Poppins', sans-serif; font-weight: 300; min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; }
+    .left-panel { background-color: #111111; padding: 56px; display: flex; flex-direction: column; justify-content: space-between; border-right: 1px solid #222222; }
+    .panel-logo { font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 800; color: #ffffff; text-decoration: none; }
+    .panel-title { font-family: 'Poppins', sans-serif; font-size: clamp(32px, 3.5vw, 48px); font-weight: 800; line-height: 1.1; letter-spacing: -1.5px; color: #ffffff; margin-bottom: 20px; }
+    .panel-title-dim { color: #555555; font-weight: 300; }
+    .panel-desc { font-size: 15px; color: #888888; line-height: 1.7; max-width: 340px; }
+    .panel-features { margin-top: 36px; display: flex; flex-direction: column; gap: 14px; }
+    .panel-feature { display: flex; align-items: flex-start; gap: 14px; font-size: 14px; color: #777777; }
+    .feat-dot { width: 5px; height: 5px; background-color: #333333; border-radius: 50%; margin-top: 7px; flex-shrink: 0; }
+    .panel-bottom { font-family: 'DM Mono', monospace; font-size: 11px; color: #333333; letter-spacing: 2px; text-transform: uppercase; }
+    .right-panel { background-color: #0a0a0a; padding: 56px; display: flex; flex-direction: column; justify-content: center; max-width: 460px; margin: 0 auto; width: 100%; }
+    .form-title { font-family: 'Poppins', sans-serif; font-size: 28px; font-weight: 800; color: #ffffff; margin-bottom: 8px; letter-spacing: -0.5px; }
+    .form-subtitle { font-size: 14px; color: #888888; margin-bottom: 36px; }
+    .form-subtitle a { color: #ffffff; text-decoration: none; border-bottom: 1px solid #333333; }
+    .form-group { margin-bottom: 20px; }
+    .form-label { display: block; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #666666; margin-bottom: 8px; }
+    .form-input { width: 100%; background-color: #141414; border: 1px solid #222222; color: #ffffff; padding: 13px 15px; font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 300; outline: none; transition: border-color 0.2s; }
+    .form-input:focus { border-color: #555555; }
+    .form-input::placeholder { color: #444444; }
+    .form-error { font-size: 11px; color: #ee5555; margin-top: 5px; display: none; font-family: 'DM Mono', monospace; }
+    .plan-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .plan-radio { display: none; }
+    .plan-label { display: flex; flex-direction: column; padding: 14px; background-color: #141414; border: 1px solid #222222; cursor: pointer; transition: border-color 0.2s; }
+    .plan-radio:checked + .plan-label { border-color: #ffffff; }
+    .plan-name { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #666666; margin-bottom: 4px; }
+    .plan-price { font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 700; color: #ffffff; }
+    .paypal-section { display: none; margin-top: 16px; }
+    .paypal-section.show { display: block; }
+    .paypal-note { font-size: 12px; color: #666666; margin-bottom: 12px; font-family: 'DM Mono', monospace; letter-spacing: 1px; }
+    .global-error { font-size: 12px; color: #ee5555; margin-bottom: 12px; font-family: 'DM Mono', monospace; min-height: 16px; display: none; }
+    .btn-submit { width: 100%; background-color: #ffffff; color: #0a0a0a; border: none; padding: 15px; font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; margin-top: 8px; }
+    .btn-submit:hover { opacity: 0.85; }
+    .btn-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+    .form-terms { margin-top: 16px; font-size: 12px; color: #444444; text-align: center; line-height: 1.6; }
+    .form-terms a { color: #666666; text-decoration: none; border-bottom: 1px solid #333333; }
+    .success-msg { display: none; text-align: center; padding: 32px 0; }
+    .success-icon { font-size: 40px; margin-bottom: 20px; color: #ffffff; }
+    .success-title { font-family: 'Poppins', sans-serif; font-size: 24px; font-weight: 700; color: #ffffff; margin-bottom: 10px; }
+    .success-desc { font-size: 14px; color: #888888; line-height: 1.7; }
+    @media (max-width: 768px) { body { grid-template-columns: 1fr; } .left-panel { display: none; } .right-panel { padding: 40px 24px; max-width: 100%; } }
+  </style>
+</head>
+<body>
+  <div class="left-panel">
+    <a href="index.html" class="panel-logo">Savd</a>
+    <div>
+      <h2 class="panel-title">Your swipe file.<br /><span class="panel-title-dim">Finally organised.</span></h2>
+      <p class="panel-desc">Stop losing great posts in your notes app. Save, tag by intent, find what you need when you write.</p>
+      <div class="panel-features">
+        <div class="panel-feature"><div class="feat-dot"></div><span>Save full text, links and carousel images</span></div>
+        <div class="panel-feature"><div class="feat-dot"></div><span>Tag by Hook, Story, Lesson, Observation and more</span></div>
+        <div class="panel-feature"><div class="feat-dot"></div><span>Access the Viral Vault — posts with 1K+ likes</span></div>
+        <div class="panel-feature"><div class="feat-dot"></div><span>Start free. Upgrade anytime.</span></div>
+      </div>
+    </div>
+    <p class="panel-bottom">Free · 35 saves · No card required</p>
+  </div>
+
+  <div class="right-panel">
+    <div id="formWrap">
+      <h1 class="form-title">Create account</h1>
+      <p class="form-subtitle">Already have one? <a href="login.html">Sign in</a></p>
+      <form id="registerForm" novalidate>
+        <div class="form-group">
+          <label class="form-label">Full name</label>
+          <input type="text" id="name" class="form-input" placeholder="Your name" />
+          <p class="form-error" id="nameError">Please enter your name</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email address</label>
+          <input type="email" id="email" class="form-input" placeholder="you@example.com" />
+          <p class="form-error" id="emailError">Please enter a valid email</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" id="password" class="form-input" placeholder="At least 8 characters" />
+          <p class="form-error" id="passwordError">Password must be at least 8 characters</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Choose your plan</label>
+          <div class="plan-grid">
+            <div><input type="radio" name="plan" id="planFree" value="free" class="plan-radio" checked /><label for="planFree" class="plan-label"><span class="plan-name">Free</span><span class="plan-price">$0</span></label></div>
+            <div><input type="radio" name="plan" id="planWriter" value="writer" class="plan-radio" /><label for="planWriter" class="plan-label"><span class="plan-name">Writer</span><span class="plan-price">$5</span></label></div>
+            <div><input type="radio" name="plan" id="planPro" value="pro" class="plan-radio" /><label for="planPro" class="plan-label"><span class="plan-name">Pro</span><span class="plan-price">$10</span></label></div>
+          </div>
+        </div>
+        <p class="global-error" id="formError"></p>
+        <button type="submit" class="btn-submit" id="submitBtn">Create account</button>
+        <p class="form-terms">By creating an account you agree to our <a href="terms.html">Terms</a> and <a href="privacy.html">Privacy Policy</a></p>
+      </form>
+      <div class="paypal-section" id="paypalWriter">
+        <p class="paypal-note">Complete your Writer subscription via PayPal:</p>
+        <div id="paypal-button-container-P-6J913983N2908953KNIB77CA"></div>
+      </div>
+      <div class="paypal-section" id="paypalPro">
+        <p class="paypal-note">Complete your Pro subscription via PayPal:</p>
+        <div id="paypal-button-container-P-9BH120751H147553JNIB77VQ"></div>
+      </div>
+    </div>
+    <div class="success-msg" id="successMsg">
+      <div class="success-icon">✓</div>
+      <h2 class="success-title">Account created!</h2>
+      <p class="success-desc">Welcome to Savd.<br /><a href="dashboard.html" style="color:#ffffff">Go to your dashboard →</a></p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://www.paypal.com/sdk/js?client-id=BAAZgejcG8Gw9_Xmcj6eLnLXmGxtDzk5z5CgSttUaEf-HfoFq-79J8enmYrzYWZOR2qfGnOjxPfERh6qeE&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
+  <script>
+    const SUPABASE_URL = 'https://rsivmsiydlowzfgvgxps.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzaXZtc2l5ZGxvd3pmZ3ZneHBzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2NTE1NTUsImV4cCI6MjA5NDIyNzU1NX0.B_vR2uugBQ5udxi0uyuLzvq7vc6SkZvtte83KDdg6R8';
+    const ADMIN_EMAIL = 'biancavanheerden@icloud.com';
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Pre-select plan from URL
+    const planParam = new URLSearchParams(window.location.search).get('plan');
+    if (planParam) {
+      const r = document.getElementById('plan' + planParam.charAt(0).toUpperCase() + planParam.slice(1));
+      if (r) r.checked = true;
+    }
+
+    // PayPal buttons
+    paypal.Buttons({
+      style: { shape: 'rect', color: 'black', layout: 'vertical', label: 'subscribe' },
+      createSubscription: (d, a) => a.subscription.create({ plan_id: 'P-6J913983N2908953KNIB77CA' }),
+      onApprove: async (d) => {
+        await sb.from('users').update({ plan: 'writer', paypal_subscription_id: d.subscriptionID }).eq('email', document.getElementById('email').value.toLowerCase());
+        window.location.href = 'dashboard.html';
+      }
+    }).render('#paypal-button-container-P-6J913983N2908953KNIB77CA');
+
+    paypal.Buttons({
+      style: { shape: 'rect', color: 'black', layout: 'vertical', label: 'subscribe' },
+      createSubscription: (d, a) => a.subscription.create({ plan_id: 'P-9BH120751H147553JNIB77VQ' }),
+      onApprove: async (d) => {
+        await sb.from('users').update({ plan: 'pro', paypal_subscription_id: d.subscriptionID }).eq('email', document.getElementById('email').value.toLowerCase());
+        window.location.href = 'dashboard.html';
+      }
+    }).render('#paypal-button-container-P-9BH120751H147553JNIB77VQ');
+
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      let valid = true;
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim().toLowerCase();
+      const password = document.getElementById('password').value;
+      const plan = document.querySelector('input[name="plan"]:checked').value;
+
+      document.getElementById('nameError').style.display = name ? 'none' : 'block';
+      if (!name) valid = false;
+      const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      document.getElementById('emailError').style.display = emailOk ? 'none' : 'block';
+      if (!emailOk) valid = false;
+      document.getElementById('passwordError').style.display = password.length >= 8 ? 'none' : 'block';
+      if (password.length < 8) valid = false;
+      if (!valid) return;
+
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true; btn.textContent = 'Creating account…';
+
+      try {
+        // Sign up with Supabase Auth
+        const { data: authData, error: authError } = await sb.auth.signUp({ email, password });
+        if (authError) throw authError;
+
+        // Set role and plan
+        const role = email === ADMIN_EMAIL ? 'admin' : 'user';
+        const userPlan = role === 'admin' ? 'pro' : plan;
+
+        // Insert into users table
+        const { error: dbError } = await sb.from('users').insert({
+          id: authData.user.id,
+          name,
+          email,
+          plan: userPlan,
+          role
+        });
+        if (dbError && dbError.code !== '23505') throw dbError;
+
+        // Store session info
+        localStorage.setItem('savd_user', JSON.stringify({
+          id: authData.user.id,
+          name,
+          email,
+          plan: userPlan,
+          role
+        }));
+
+        if (plan === 'free' || role === 'admin') {
+          document.getElementById('formWrap').style.display = 'none';
+          document.getElementById('successMsg').style.display = 'block';
+          setTimeout(() => window.location.href = 'dashboard.html', 2000);
+        } else {
+          document.getElementById('registerForm').style.display = 'none';
+          btn.style.display = 'none';
+          if (plan === 'writer') document.getElementById('paypalWriter').classList.add('show');
+          if (plan === 'pro') document.getElementById('paypalPro').classList.add('show');
+        }
+      } catch (err) {
+        const errEl = document.getElementById('formError');
+        errEl.textContent = err.message || 'Something went wrong. Please try again.';
+        errEl.style.display = 'block';
+        btn.disabled = false; btn.textContent = 'Create account';
+      }
+    });
+  </script>
+</body>
+</html>
