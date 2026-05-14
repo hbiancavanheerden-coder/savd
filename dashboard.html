@@ -11,7 +11,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { background: #0a0a0a; }
     body { background-color: #0a0a0a !important; color: #ffffff; font-family: 'Poppins', sans-serif; font-weight: 300; min-height: 100vh; }
-    .layout { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+    .layout { display: block; min-height: 100vh; }
 
     /* SIDEBAR */
     .sidebar { background-color: #0f0f0f; border-right: 1px solid #1e1e1e; padding: 28px 20px; display: flex; flex-direction: column; gap: 20px; position: fixed; top: 0; left: 0; bottom: 0; width: 220px; overflow-y: auto; }
@@ -35,7 +35,7 @@
     .sign-out-btn:hover { color: #666; }
 
     /* MAIN */
-    .main { margin-left: 220px; padding: 36px 44px; background-color: #0a0a0a; min-height: 100vh; }
+    .main { margin-left: 220px; padding: 36px 44px; background-color: #0a0a0a; min-height: 100vh; width: calc(100% - 220px); box-sizing: border-box; }
     .main-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; padding-bottom: 28px; border-bottom: 1px solid #1e1e1e; }
     .main-title { font-family: 'Poppins', sans-serif; font-size: 26px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px; }
     .main-subtitle { font-size: 13px; color: #555; margin-top: 3px; }
@@ -206,7 +206,7 @@
     .modal-plan-title { font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 600; color: #ffffff; margin-bottom: 4px; }
     .modal-plan-desc { font-size: 13px; color: #666; margin-bottom: 16px; line-height: 1.6; }
 
-    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .sidebar { display: none; } .main { margin-left: 0; padding: 20px; } .cards-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .sidebar { display: none; } .main { margin-left: 0; padding: 20px; width: 100%; } .cards-grid { grid-template-columns: 1fr; } }
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
   </style>
 </head>
