@@ -122,8 +122,8 @@
   <div class="modal">
     <div class="modal-header"><h2 class="modal-title">Add to Viral Vault</h2><button class="modal-close" onclick="closeVaultModal()">✕</button></div>
     <div class="modal-body">
-      <div><label class="f-label">Post text</label><textarea class="f-textarea" id="vaultText" placeholder="Paste the full post text…"></textarea></div>
-      <div><label class="f-label">Original URL (optional)</label><input type="url" class="f-input" id="vaultUrl" placeholder="https://…" /></div>
+      <div><label class="f-label">Post URL <span style="color:#555;font-weight:300">— link to the original post</span></label><input type="url" class="f-input" id="vaultUrl" placeholder="https://threads.net/@username/post/…" /></div>
+      <div><label class="f-label">Description <span style="color:#555;font-weight:300">(optional — what makes this post great)</span></label><textarea class="f-textarea" id="vaultText" placeholder="e.g. Great hook, builds curiosity in first line…" style="min-height:72px"></textarea></div>
       <div><label class="f-label">Intent tag</label>
         <select class="f-select" id="vaultIntent"><option value="">Select intent</option><option value="hook">Hook</option><option value="observation">Observation</option><option value="story">Story</option><option value="lesson">Lesson</option><option value="proof">Proof</option><option value="contrast">Contrast</option><option value="motivation">Motivation</option><option value="humor">Humor</option></select>
       </div>
@@ -183,7 +183,9 @@
         <span style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#555">${p.platform}</span>
         <span style="font-family:'DM Mono',monospace;font-size:10px;color:#444">♥ ${(p.likes||0).toLocaleString()}</span>
       </div>
-      <p class="vault-card-text">${(p.text||'').replace(/</g,'&lt;')}</p>
+      <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#444;margin-bottom:10px">${p.intent||''}</div>
+      ${p.text ? `<p class="vault-card-text">${p.text.replace(/</g,'&lt;')}</p>` : ''}
+      ${p.url ? `<a href="${p.url}" target="_blank" style="display:block;background:#ffffff;color:#0a0a0a;text-align:center;padding:9px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;text-decoration:none;font-weight:600;border-radius:6px;margin-bottom:10px">↗ VIEW POST</a>` : ''}
       <div class="vault-card-actions"><button class="btn-sm" onclick="removeVault('${p.id}')">Remove</button></div>
     </div>`).join('');
   }
@@ -207,8 +209,8 @@
     const intent = document.getElementById('vaultIntent').value;
     const platform = document.getElementById('vaultPlatform').value;
     const likes = parseInt(document.getElementById('vaultLikes').value) || 0;
-    if (!text || !intent || !platform) { alert('Please fill in text, intent and platform.'); return; }
-    const { error } = await sb.from('vault').insert({ text, url, intent, platform, likes });
+    if (!url || !intent || !platform) { alert('URL, intent and platform are required.'); return; }
+    const { error } = await sb.from('vault').insert({ text: text || null, url, intent, platform, likes });
     if (error) { alert('Error: ' + error.message); return; }
     closeVaultModal(); loadVault();
     ['vaultText','vaultUrl','vaultLikes'].forEach(id => document.getElementById(id).value = '');

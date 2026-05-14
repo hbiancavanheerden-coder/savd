@@ -703,8 +703,27 @@
     }
     const { data } = await sb.from('vault').select('*').order('created_at', { ascending: false });
     const items = data || [];
-    if (!items.length) { grid.innerHTML = '<div class="empty-state"><div class="empty-icon">✦</div><h3 class="empty-title">Vault is empty</h3><p class="empty-desc">Admin is curating posts. Check back soon.</p></div>'; return; }
-    grid.innerHTML = items.map(item => buildCard({...item, type:'text'})).join('');
+    if (!items.length) { grid.innerHTML = '<div class="empty-state"><div class="empty-icon">✦</div><h3 class="empty-title">Vault is empty</h3><p class="empty-desc">New posts added weekly. Check back soon.</p></div>'; return; }
+    grid.innerHTML = items.map(item => {
+      const intentColors = { hook:'background:#fff0f0;color:#cc3333;border:1px solid #ffcccc', story:'background:#f0f4ff;color:#3355cc;border:1px solid #ccd4ff', observation:'background:#fff8f0;color:#cc6600;border:1px solid #ffd9aa', lesson:'background:#f0fff4;color:#228833;border:1px solid #aaddbb', proof:'background:#f5f5f5;color:#666;border:1px solid #ddd', contrast:'background:#fdf0ff;color:#8833cc;border:1px solid #ddb3ff', motivation:'background:#fffcf0;color:#997700;border:1px solid #ffe080', humor:'background:#f0feff;color:#007788;border:1px solid #aaeeff' };
+      const pillStyle = intentColors[item.intent] || 'background:#f5f5f5;color:#888;border:1px solid #e0e0e0';
+      const platformIcons = { x:'X', threads:'T', linkedin:'in', instagram:'📷', facebook:'f', youtube:'▶', substack:'S' };
+      const platformColors = { x:'#000', threads:'#000', linkedin:'#0077b5', instagram:'#e1306c', facebook:'#1877f2', substack:'#ff6719', youtube:'#ff0000' };
+      return `<div style="background:#ffffff;border:1px solid #e8e8e8;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;min-height:120px;">
+        <div style="display:flex;align-items:center;gap:12px;padding:16px 16px 10px;">
+          <div style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0;color:#fff;background:${platformColors[item.platform]||'#333'}">${platformIcons[item.platform]||'•'}</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:14px;font-weight:700;color:#0a0a0a;">✦ Viral Vault</div>
+            <div style="font-family:'DM Mono',monospace;font-size:10px;color:#aaa;letter-spacing:1px;margin-top:1px;">${(item.platform||'').toUpperCase()} · ♥ ${(item.likes||0).toLocaleString()}</div>
+          </div>
+          <span style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;border-radius:20px;font-weight:600;flex-shrink:0;${pillStyle}">${item.intent||''}</span>
+        </div>
+        ${item.text ? `<div style="padding:4px 16px 12px;"><p style="font-size:14px;line-height:1.6;color:#444;font-style:italic;">"${item.text.replace(/</g,'&lt;')}"</p></div>` : ''}
+        <div style="padding:0 16px 16px;margin-top:auto;">
+          <a href="${item.url}" target="_blank" style="display:block;background:#0a0a0a;color:#ffffff;text-align:center;padding:12px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;text-decoration:none;font-weight:600;border-radius:10px;">↗ VIEW ORIGINAL POST</a>
+        </div>
+      </div>`;
+    }).join('');
   }
 
   // ── SAVE MODAL ─────────────────────────────────────────────────────────────
