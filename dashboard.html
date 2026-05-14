@@ -514,7 +514,7 @@
     if (plan === 'free') {
       document.getElementById('savesUsed').textContent = used;
       document.getElementById('savesFill').style.width = Math.min((used/15)*100,100) + '%';
-      if (used >= 28) document.getElementById('upgradeBanner').style.display = 'flex';
+      if (used >= 12) document.getElementById('upgradeBanner').style.display = 'flex';
       document.getElementById('upgradeBtn').style.display = 'block';
     } else {
       document.getElementById('savesBar').style.display = 'none';
@@ -943,6 +943,13 @@
     const intent = document.getElementById('saveIntent').value;
     const platform = document.getElementById('savePlatform').value;
     if (!platform) { alert('Please select a platform.'); return; }
+
+    // Hard block free plan at 15
+    if ((user.plan === 'free' || !user.plan) && user.email !== 'biancavanheerden@icloud.com' && allSaves.length >= 15) {
+      closeSaveModal();
+      openUpgrade('writer');
+      return;
+    }
 
     const btn = document.getElementById('saveBtn');
     btn.disabled = true; btn.textContent = 'Saving…';
