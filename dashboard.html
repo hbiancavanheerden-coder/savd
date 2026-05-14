@@ -234,7 +234,7 @@
         <div class="user-name" id="sidebarName">—</div>
         <div class="user-plan" id="sidebarPlan">FREE</div>
         <div class="saves-bar" id="savesBar">
-          <div class="saves-lbl"><span id="savesUsed">0</span> / 35 saves</div>
+          <div class="saves-lbl"><span id="savesUsed">0</span> / 15 saves</div>
           <div class="saves-track"><div class="saves-fill" id="savesFill" style="width:0%"></div></div>
         </div>
         <button class="btn-upgrade-sm" id="upgradeBtn" onclick="openUpgrade('writer')" style="display:none">✦ Upgrade to Writer</button>
@@ -496,7 +496,7 @@
     const used = allSaves.length;
     if (plan === 'free') {
       document.getElementById('savesUsed').textContent = used;
-      document.getElementById('savesFill').style.width = Math.min((used/35)*100,100) + '%';
+      document.getElementById('savesFill').style.width = Math.min((used/15)*100,100) + '%';
       if (used >= 28) document.getElementById('upgradeBanner').style.display = 'flex';
       document.getElementById('upgradeBtn').style.display = 'block';
     } else {
@@ -536,30 +536,7 @@
       grid.innerHTML = `<div class="empty-state"><div class="empty-icon">◻</div><h3 class="empty-title">Nothing here yet</h3><p class="empty-desc">${currentView === 'all' ? 'Click "+ Save new" to add your first post.' : 'Save something tagged as ' + currentView + '.'}</p></div>`;
       return;
     }
-    // Filter out any completely empty/broken saves
-    const validItems = items.filter(item => item.text || item.url || item.og_title || item.og_image || (item.images && item.images.length > 0));
-    const brokenItems = items.filter(item => !item.text && !item.url && !item.og_title && !item.og_image && (!item.images || item.images.length === 0));
-    
-    if (!validItems.length) {
-      grid.innerHTML = `<div class="empty-state"><div class="empty-icon">◻</div><h3 class="empty-title">No valid saves</h3><p class="empty-desc">Your old saves had no content. Delete them and re-save.</p></div>`;
-      return;
-    }
-    grid.innerHTML = validItems.map(item => buildCard(item)).join('');
-    // Add delete buttons for broken saves at the bottom
-    if (brokenItems.length) {
-      grid.innerHTML += `<div style="grid-column:1/-1;background:#141414;border:1px solid #222;border-radius:12px;padding:20px;text-align:center;">
-        <p style="color:#666;font-size:13px;margin-bottom:12px;">${brokenItems.length} empty save(s) found. <button onclick="deleteBroken()" style="background:#ffffff;color:#0a0a0a;border:none;padding:6px 16px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;">Delete them</button></p>
-      </div>`;
-    }
-  }
-
-  async function deleteBroken() {
-    const broken = allSaves.filter(item => !item.text && !item.url && !item.og_title && !item.og_image && (!item.images || item.images.length === 0));
-    for (const item of broken) {
-      await sb.from('saves').delete().eq('id', item.id);
-    }
-    allSaves = allSaves.filter(item => item.text || item.url || item.og_title || item.og_image || (item.images && item.images.length > 0));
-    renderCards();
+    grid.innerHTML = items.map(item => buildCard(item)).join('');
   }
 
   function getPlatformClass(p) {
@@ -592,7 +569,7 @@
     const author = item.author || platformLabel;
 
     // Force inline styles so mobile rendering can't ignore CSS classes
-    const cardStyle = 'background:#ffffff;border:1px solid #e8e8e8;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;transition:transform 0.2s;';
+    const cardStyle = 'background:#ffffff !important;border:1px solid #e8e8e8;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;min-height:120px;';
 
     const avatarColors = { x:'#000000', threads:'#000000', linkedin:'#0077b5', instagram:'linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)', facebook:'#1877f2', substack:'#ff6719', youtube:'#ff0000' };
     const avColor = avatarColors[item.platform] || '#333333';
@@ -715,7 +692,7 @@
 
   // ── SAVE MODAL ─────────────────────────────────────────────────────────────
   async function openSaveModal() {
-    if ((user.plan === 'free' || !user.plan) && allSaves.length >= 35) { openUpgrade('writer'); return; }
+    if ((user.plan === 'free' || !user.plan) && allSaves.length >= 15) { openUpgrade('writer'); return; }
     document.getElementById('saveModal').classList.add('open');
 
     // Try to read clipboard
