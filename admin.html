@@ -122,8 +122,32 @@
   <div class="modal">
     <div class="modal-header"><h2 class="modal-title">Add to Viral Vault</h2><button class="modal-close" onclick="closeVaultModal()">✕</button></div>
     <div class="modal-body">
-      <div><label class="f-label">Post URL <span style="color:#555;font-weight:300">— link to the original post</span></label><input type="url" class="f-input" id="vaultUrl" placeholder="https://threads.net/@username/post/…" /></div>
-      <div><label class="f-label">Description <span style="color:#555;font-weight:300">(optional — what makes this post great)</span></label><textarea class="f-textarea" id="vaultText" placeholder="e.g. Great hook, builds curiosity in first line…" style="min-height:72px"></textarea></div>
+      <div><label class="f-label">Post URL</label><input type="url" class="f-input" id="vaultUrl" placeholder="https://threads.net/@username/post/…" /></div>
+      <div><label class="f-label">Post text <span style="color:#555;font-weight:300">— copy from the original post</span></label><textarea class="f-textarea" id="vaultText" placeholder="Paste the full post text here…" style="min-height:120px"></textarea></div>
+      <div><label class="f-label">Platform</label>
+        <select class="f-select" id="vaultPlatform">
+          <option value="">Select platform</option>
+          <option value="x">X / Twitter</option>
+          <option value="threads">Threads</option>
+          <option value="linkedin">LinkedIn</option>
+          <option value="instagram">Instagram</option>
+          <option value="substack">Substack</option>
+          <option value="youtube">YouTube</option>
+        </select>
+      </div>
+      <div><label class="f-label">Intent tag</label>
+        <select class="f-select" id="vaultIntent">
+          <option value="">Select intent</option>
+          <option value="hook">Hook</option>
+          <option value="observation">Observation</option>
+          <option value="story">Story</option>
+          <option value="lesson">Lesson</option>
+          <option value="proof">Proof</option>
+          <option value="contrast">Contrast</option>
+          <option value="motivation">Motivation</option>
+          <option value="humor">Humor</option>
+        </select>
+      </div>
       <div><label class="f-label">Intent tag</label>
         <select class="f-select" id="vaultIntent"><option value="">Select intent</option><option value="hook">Hook</option><option value="observation">Observation</option><option value="story">Story</option><option value="lesson">Lesson</option><option value="proof">Proof</option><option value="contrast">Contrast</option><option value="motivation">Motivation</option><option value="humor">Humor</option></select>
       </div>
@@ -181,11 +205,10 @@
     grid.innerHTML = items.map(p => `<div class="vault-card">
       <div class="vault-card-meta">
         <span style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#555">${p.platform}</span>
-        <span style="font-family:'DM Mono',monospace;font-size:10px;color:#444">♥ ${(p.likes||0).toLocaleString()}</span>
+        ${p.intent ? `<span style="font-family:'DM Mono',monospace;font-size:10px;color:#444">${p.intent}</span>` : ''}
       </div>
-      <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#444;margin-bottom:10px">${p.intent||''}</div>
-      ${p.text ? `<p class="vault-card-text">${p.text.replace(/</g,'&lt;')}</p>` : ''}
-      ${p.url ? `<a href="${p.url}" target="_blank" style="display:block;background:#ffffff;color:#0a0a0a;text-align:center;padding:9px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;text-decoration:none;font-weight:600;border-radius:6px;margin-bottom:10px">↗ VIEW POST</a>` : ''}
+      <p class="vault-card-text">${(p.text||'').replace(/</g,'&lt;')}</p>
+      ${p.url ? `<a href="${p.url}" target="_blank" style="display:block;background:#ffffff;color:#0a0a0a;text-align:center;padding:9px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;text-decoration:none;font-weight:600;border-radius:6px;margin-bottom:10px;border:1px solid #333">↗ VIEW ORIGINAL</a>` : ''}
       <div class="vault-card-actions"><button class="btn-sm" onclick="removeVault('${p.id}')">Remove</button></div>
     </div>`).join('');
   }
@@ -208,12 +231,11 @@
     const url = document.getElementById('vaultUrl').value.trim();
     const intent = document.getElementById('vaultIntent').value;
     const platform = document.getElementById('vaultPlatform').value;
-    const likes = parseInt(document.getElementById('vaultLikes').value) || 0;
-    if (!url || !intent || !platform) { alert('URL, intent and platform are required.'); return; }
-    const { error } = await sb.from('vault').insert({ text: text || null, url, intent, platform, likes });
+    if (!url || !text || !platform) { alert('URL, text and platform are required.'); return; }
+    const { error } = await sb.from('vault').insert({ text, url, intent: intent||null, platform, likes: 0 });
     if (error) { alert('Error: ' + error.message); return; }
     closeVaultModal(); loadVault();
-    ['vaultText','vaultUrl','vaultLikes'].forEach(id => document.getElementById(id).value = '');
+    ['vaultText','vaultUrl'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('vaultIntent').value = ''; document.getElementById('vaultPlatform').value = '';
   }
 
